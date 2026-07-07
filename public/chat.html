@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f6efe4">
+<title>Chat · UNFOLD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@1,400..700&family=Manrope:wght@300..800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles/base.css">
+<style>
+  body { display: flex; flex-direction: column; height: 100dvh; overflow: hidden; }
+  header.bar {
+    display: flex; gap: 12px; align-items: center; padding: 10px 14px;
+    background: rgba(246, 239, 228, 0.82); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+    border-bottom: 1px solid var(--line); z-index: 20;
+  }
+  .back { text-decoration: none; font-size: 20px; padding: 6px 10px; color: var(--ink-soft); }
+  .head-photo { width: 46px; height: 46px; border-radius: 14px; flex-shrink: 0; cursor: pointer; box-shadow: var(--shadow); }
+  .head-photo .photo-frame { width: 100%; height: 100%; border-radius: 14px; }
+  .head-info { flex: 1; min-width: 0; }
+  .head-info .nm { font-weight: 800; font-size: 16.5px; }
+  .head-info .st { font-size: 11.5px; color: var(--ink-soft); font-weight: 600; margin-top: 2px; }
+  .head-menu { position: relative; }
+  .head-menu > button { border: 1px solid var(--line); background: rgba(255,255,255,0.6); width: 38px; height: 38px; border-radius: 12px; font-size: 18px; color: var(--ink-soft); cursor: pointer; }
+  .menu-pop { position: absolute; right: 0; top: 44px; z-index: 40; min-width: 210px; background: #fff; border: 1px solid var(--glass-border); border-radius: 16px; box-shadow: var(--shadow); overflow: hidden; display: none; }
+  .menu-pop.open { display: block; animation: fade-up 0.2s ease; }
+  @keyframes fade-up { from { opacity: 0; transform: translateY(6px); } }
+  .menu-pop button { display: block; width: 100%; border: none; background: none; text-align: left; padding: 13px 16px; font-size: 14px; font-weight: 700; cursor: pointer; color: var(--ink); }
+  .menu-pop button:hover { background: rgba(229,69,95,0.06); }
+  .menu-pop button small { display: block; font-weight: 600; color: var(--ink-faint); font-size: 11.5px; margin-top: 2px; }
+
+  .pinned {
+    display: flex; justify-content: center; padding: 14px 0 6px;
+    transition: max-height 0.5s ease, opacity 0.5s ease; max-height: 400px; overflow: hidden;
+  }
+  .pinned.collapsed { max-height: 0; opacity: 0; padding: 0; }
+  .pinned-inner { width: 216px; }
+  .pinned-inner .photo-frame {
+    aspect-ratio: 3 / 4; border-radius: 22px;
+    box-shadow: 0 22px 50px -18px rgba(120, 70, 40, 0.5), 0 0 44px -20px rgba(229, 69, 95, 0.4);
+    border: 1px solid var(--glass-border);
+  }
+  .pinned-meta { text-align: center; margin-top: 10px; }
+  .next-hint { font-size: 12px; color: var(--ink-soft); font-weight: 700; }
+  .next-hint b { color: var(--rose); }
+  .partner-status-card { margin-top: 8px; display: inline-flex; align-items: center; gap: 6px; max-width: 260px;
+    background: linear-gradient(120deg, rgba(229,69,95,0.09), rgba(242,137,74,0.09)); border: 1px solid rgba(229,69,95,0.25);
+    border-radius: 999px; padding: 6px 13px; font-family: var(--font-serif); font-style: italic; font-size: 13.5px; color: var(--ink); }
+  .partner-status-card span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  #thread { flex: 1; overflow-y: auto; padding: 10px 16px 16px; -webkit-overflow-scrolling: touch; }
+  .msg { max-width: 78%; padding: 11px 15px; border-radius: 19px; margin-bottom: 8px; font-size: 15px; line-height: 1.5; word-wrap: break-word; animation: msg-in 0.3s ease; }
+  @keyframes msg-in { from { opacity: 0; transform: translateY(8px); } }
+  .msg.theirs { background: rgba(255,255,255,0.9); border: 1px solid var(--glass-border); border-bottom-left-radius: 6px; margin-right: auto; color: var(--ink); box-shadow: var(--shadow); }
+  .msg.mine { background: var(--grad); color: #fff; border-bottom-right-radius: 6px; margin-left: auto; box-shadow: var(--glow-rose); }
+  .msg audio { width: 220px; max-width: 60vw; height: 40px; }
+  .msg .flag { display: block; font-size: 10px; opacity: 0.85; margin-top: 4px; font-weight: 800; letter-spacing: 0.04em; }
+  .sys { text-align: center; font-size: 11.5px; color: var(--ink-faint); font-weight: 800; margin: 16px 0; letter-spacing: 0.1em; }
+  .sys.stage { color: var(--rose); }
+
+  footer.compose { padding: 10px 12px calc(12px + env(safe-area-inset-bottom)); display: flex; gap: 8px; align-items: flex-end; background: rgba(246,239,228,0.9); backdrop-filter: blur(18px); border-top: 1px solid var(--line); }
+  footer .box { flex: 1; }
+  footer textarea {
+    width: 100%; border-radius: 20px; border: 1px solid var(--line); padding: 12px 16px;
+    background: rgba(255,255,255,0.85); outline: none; resize: none; max-height: 110px; min-height: 46px; color: var(--ink);
+  }
+  footer textarea::placeholder { color: var(--ink-faint); }
+  footer textarea:focus { border-color: var(--rose); box-shadow: 0 0 0 4px rgba(229,69,95,0.14); }
+  .rnd { width: 46px; height: 46px; border-radius: 50%; border: none; cursor: pointer; font-size: 18px; flex-shrink: 0; }
+  .send { background: var(--grad); color: #fff; font-weight: 800; box-shadow: var(--glow-rose); }
+  .mic { background: rgba(255,255,255,0.8); border: 1px solid var(--line) !important; color: var(--ink-soft); }
+  .mic.locked-mic { opacity: 0.45; }
+  .quota { text-align: center; font-size: 10.5px; color: var(--ink-faint); padding-bottom: 4px; }
+
+  /* recording bar */
+  .rec-bar { flex: 1; display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.85); border: 1px solid rgba(229,69,95,0.4); border-radius: 20px; padding: 10px 16px; }
+  .rec-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--rose); animation: pulse-dot 1s infinite; }
+  @keyframes pulse-dot { 50% { opacity: 0.3; } }
+  .rec-time { font-weight: 800; font-variant-numeric: tabular-nums; }
+  .rec-hint { font-size: 12px; color: var(--ink-faint); font-weight: 600; flex: 1; }
+
+  /* panels */
+  .soft-panel { margin: 10px 12px calc(14px + env(safe-area-inset-bottom)); padding: 20px; border-radius: 22px; text-align: center;
+    background: var(--glass-strong); border: 1px solid var(--glass-border); box-shadow: var(--shadow); }
+  .soft-panel .ic { font-size: 30px; }
+  .soft-panel h4 { font-family: var(--font-serif); font-style: italic; font-weight: 500; font-size: 21px; margin: 8px 0 6px; }
+  .soft-panel p { font-size: 14px; color: var(--ink-soft); line-height: 1.55; margin-bottom: 16px; }
+  .soft-panel p b { color: var(--ink); }
+  .soft-actions { display: flex; flex-direction: column; gap: 10px; }
+  .soft-actions .btn { width: 100%; }
+
+  /* match bar + celebration */
+  .match-bar { margin: 8px 12px 0; padding: 12px 16px; border-radius: 18px; display: flex; align-items: center; gap: 10px;
+    background: linear-gradient(120deg, rgba(229,69,95,0.12), rgba(242,137,74,0.12)); border: 1px solid rgba(229,69,95,0.35); }
+  .match-bar .t { flex: 1; font-size: 13.5px; font-weight: 800; color: var(--rose); }
+  .match-bar .btn { padding: 9px 16px; font-size: 13px; }
+
+  /* full profile overlay */
+  .fp-overlay { position: fixed; inset: 0; z-index: 120; background: var(--cream); overflow-y: auto; display: none; }
+  .fp-overlay.open { display: block; animation: fade-up 0.3s ease; }
+  .fp-wrap { width: min(560px, 100% - 28px); margin: 0 auto; padding: 18px 0 60px; }
+  .fp-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .fp-close { border: 1px solid var(--line); background: rgba(255,255,255,0.7); border-radius: 999px; padding: 9px 18px; font-weight: 800; cursor: pointer; }
+  .fp-photo { border-radius: 22px; overflow: hidden; box-shadow: var(--shadow); margin-top: 12px; }
+  .fp-photo img { width: 100%; display: block; }
+  .fp-name { font-family: var(--font-serif); font-style: italic; font-weight: 500; font-size: 36px; margin-top: 18px; }
+  .fp-name span { font-family: var(--font-ui); font-style: normal; font-weight: 300; font-size: 26px; color: var(--ink-soft); margin-left: 8px; }
+  .fp-block { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 18px; padding: 18px 20px; margin-top: 12px; box-shadow: var(--shadow); }
+  .fp-block .q { font-size: 10.5px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--rose); margin-bottom: 7px; }
+  .fp-block .a { font-family: var(--font-serif); font-style: italic; font-size: 20px; line-height: 1.45; }
+  .fp-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .fp-chips .chip { font-size: 12px; font-weight: 700; background: rgba(255,255,255,0.7); border: 1px solid var(--line); padding: 6px 12px; border-radius: 999px; color: var(--ink); }
+</style>
+</head>
+<body>
+<div class="orbs"><div class="orb peach"></div><div class="orb rose"></div><div class="orb amber"></div></div>
+
+<header class="bar">
+  <a class="back" href="/app.html">←</a>
+  <div class="head-photo" id="head-photo" title="Show photo"></div>
+  <div class="head-info">
+    <div class="nm" id="nm">…</div>
+    <div class="st"><span id="ladder-slot"></span> <span id="stage-label"></span></div>
+  </div>
+  <div class="head-menu" id="head-menu" style="display:none">
+    <button id="menu-btn">⋯</button>
+    <div class="menu-pop" id="menu-pop">
+      <button id="menu-pause">⏸ Take a pause<small>Reopenable anytime, by either of you</small></button>
+      <button id="menu-exit">🕊 Exit softly<small>End this gently — kind and final</small></button>
+    </div>
+  </div>
+</header>
+
+<div class="pinned" id="pinned">
+  <div class="pinned-inner">
+    <div id="pinned-photo"></div>
+    <div class="pinned-meta"><span class="next-hint" id="next-hint"></span><div id="partner-status"></div></div>
+  </div>
+</div>
+
+<div id="match-slot"></div>
+<div id="thread"></div>
+
+<div class="quota" id="quota"></div>
+<footer class="compose" id="composer">
+  <div class="box" id="input-box"><textarea id="input" rows="1" placeholder="Say something real…"></textarea></div>
+  <button class="rnd mic" id="mic" title="Voice note">🎤</button>
+  <button class="rnd send" id="send">↑</button>
+</footer>
+
+<div id="soft-slot"></div>
+
+<div class="fp-overlay" id="fp-overlay">
+  <div class="fp-wrap" id="fp-wrap"></div>
+</div>
+
+<script src="/js/common.js"></script>
+<script>
+const convId = new URLSearchParams(location.search).get('id');
+let state = null;
+let reveal = null;
+let lastMsgId = 0;
+let knownStage = -1;
+let wasMatched = false;
+
+const STAGE_TOASTS = ['', '✨ First tiles cleared — a glimpse, earned.', '🎙 Twelve tiles clear — voice unlocked. Send one!', '💥 Full reveal.'];
+
+function stageLabelText(d) {
+  if (d.status === 'matched') return "💘 It's a match";
+  if (d.status === 'ended') return 'Closed, kindly';
+  if (d.status === 'closed') return 'Paused';
+  if (d.status === 'locked') return 'Locked — someone new replied';
+  if (d.stage >= 3) return 'Fully revealed';
+  if (!d.bothSent) return 'Waiting for both voices';
+  return STAGE_LABELS[d.stage] + ' · ' + d.toNext + ' real msg' + (d.toNext === 1 ? '' : 's') + ' to next reveal';
+}
+
+function renderHeader(d) {
+  document.getElementById('nm').textContent = d.partner.firstName + ', ' + d.partner.age;
+  document.getElementById('ladder-slot').innerHTML = ladderHtml(d.stage, true);
+  document.getElementById('stage-label').textContent = stageLabelText(d);
+  document.getElementById('next-hint').innerHTML = d.stage >= 3
+    ? esc(d.partner.firstName) + ', as they are.'
+    : (d.bothSent ? '<b>' + d.toNext + '</b> real message' + (d.toNext === 1 ? '' : 's') + ' until the glass gives way'
+                  : 'the ladder starts when you both have spoken');
+  document.getElementById('quota').textContent = 'today in this chat: ' + d.myMsgsToday + '/' + d.msgsPerChatPerDay + ' messages · depth over volume';
+  const ps = document.getElementById('partner-status');
+  const emoji = { mood: '🌤', song: '🎵', thought: '💭', today: '📍' };
+  ps.innerHTML = d.partner.status
+    ? '<div class="partner-status-card">' + (emoji[d.partner.status.type] || '💭') + ' <span>' + esc(d.partner.status.text) + '</span></div>'
+    : '';
+}
+
+function voiceUrl(msgId) {
+  const tok = sessionToken();
+  return '/api/chats/' + convId + '/voice/' + msgId + (tok ? '?sid=' + encodeURIComponent(tok) : '');
+}
+
+function appendMessages(msgs) {
+  const thread = document.getElementById('thread');
+  const stick = thread.scrollHeight - thread.scrollTop - thread.clientHeight < 80;
+  for (const m of msgs) {
+    if (m.id <= lastMsgId) continue;
+    lastMsgId = m.id;
+    const el = document.createElement('div');
+    el.className = 'msg ' + (m.mine ? 'mine' : 'theirs');
+    if (m.kind === 'voice') {
+      const au = document.createElement('audio');
+      au.controls = true; au.preload = 'none'; au.src = voiceUrl(m.id);
+      el.appendChild(au);
+    } else {
+      el.textContent = m.text;
+      if (!m.meaningful) {
+        const f = document.createElement('span');
+        f.className = 'flag';
+        f.textContent = "didn't count toward the reveal";
+        el.appendChild(f);
+      }
+    }
+    thread.appendChild(el);
+  }
+  if (stick) thread.scrollTop = thread.scrollHeight;
+}
+
+function announceStage(stage) {
+  const thread = document.getElementById('thread');
+  const el = document.createElement('div');
+  el.className = 'sys stage';
+  el.textContent = stage >= 3 ? '💥 THE GLASS SHATTERS — FULL REVEAL' : '✨ REVEAL — ' + STAGE_LABELS[stage].toUpperCase();
+  thread.appendChild(el);
+  thread.scrollTop = thread.scrollHeight;
+}
+
+function showComposer(on) {
+  document.getElementById('composer').style.display = on ? 'flex' : 'none';
+  document.getElementById('quota').style.display = on ? 'block' : 'none';
+}
+
+// ---------- match decision + soft states ----------
+// Re-render a slot only when its content actually changes — the 3s poll must
+// never replace DOM mid-tap (that eats clicks).
+function setSlot(slot, html) {
+  if (slot.dataset.html === html) return false;
+  slot.dataset.html = html;
+  slot.innerHTML = html;
+  return true;
+}
+
+function renderMatchSlot(d) {
+  const slot = document.getElementById('match-slot');
+  if (d.status === 'matched') {
+    setSlot(slot, '<div class="match-bar"><span class="t">💘 You and ' + esc(d.partner.firstName) + ' said yes.</span>' +
+      '<button class="btn btn-primary" id="view-full">Full profile</button></div>');
+    document.getElementById('view-full').onclick = () => openFullProfile(state);
+    return;
+  }
+  const decidable = d.stage >= 3 && !d.closed && d.status !== 'ended';
+  if (!decidable) { setSlot(slot, ''); return; }
+  if (d.myMatch === 'yes') {
+    setSlot(slot, '<div class="match-bar"><span class="t">💘 You said yes — waiting for ' + esc(d.partner.firstName) + '.</span></div>');
+    return;
+  }
+  if (d.myMatch === null) {
+    const changed = setSlot(slot,
+      '<div class="soft-panel" style="margin-bottom:0">' +
+        '<div class="ic">' + (d.theirMatchYes ? '💘' : '🪞') + '</div>' +
+        '<h4>' + (d.theirMatchYes ? esc(d.partner.firstName) + ' already said yes.' : 'The glass is gone.') + '</h4>' +
+        '<p>You\'ve read each other, heard each other, and now — seen each other. <b>Is this a match?</b></p>' +
+        '<div class="soft-actions">' +
+          '<button class="btn btn-primary" id="match-yes">💘 It\'s a match</button>' +
+          '<button class="btn btn-ghost" id="match-no">🕊 Not this time — exit softly</button>' +
+        '</div>' +
+      '</div>');
+    if (!changed) return;
+    document.getElementById('match-yes').onclick = async () => {
+      const r = await api('/api/chats/' + convId + '/match', { body: { decision: 'yes' } });
+      toast(r.matched ? "💘 It's a match!" : '💘 Noted — now they decide.');
+      refresh();
+    };
+    document.getElementById('match-no').onclick = async () => {
+      if (!confirm('🕊 Exit softly?\n\nThis ends the story with ' + d.partner.firstName + ' — gently and finally. They\'ll see a kind note, never a rejection screen.')) return;
+      await api('/api/chats/' + convId + '/match', { body: { decision: 'no' } });
+      refresh();
+    };
+  }
+}
+
+function renderSoft(d) {
+  const slot = document.getElementById('soft-slot');
+  if (d.status === 'ended') {
+    showComposer(false);
+    setSlot(slot,
+      '<div class="soft-panel">' +
+        '<div class="ic">🕊</div>' +
+        (d.closedByMe
+          ? '<h4>You closed this gently.</h4><p>The thread stays here as a kind memory. Your openers and your heart are intact.</p>'
+          : '<h4>' + esc(d.partner.firstName) + ' stepped away from this story.</h4>' +
+            '<p>It ends with kindness — <b>nothing you did wrong</b>. Some stories are chapters, not books. The room is still full of people who haven\'t met you yet 🧡</p>') +
+        '<div class="soft-actions"><a class="btn btn-primary" href="/app.html">Back to the room</a></div>' +
+      '</div>');
+    return;
+  }
+  if (d.status === 'locked') {
+    showComposer(false);
+    const primaryName = d.primaryPartner ? d.primaryPartner.firstName : 'your current chat';
+    const changed = setSlot(slot,
+      '<div class="soft-panel">' +
+        '<div class="ic">💫</div>' +
+        '<h4>' + esc(d.partner.firstName) + ' replied.</h4>' +
+        "<p>You're mid-story with <b>" + esc(primaryName) + '</b>. UNFOLD is built for one story at a time — open this one <b>in parallel</b>, or gently close your current one to make room.</p>' +
+        '<div class="soft-actions">' +
+          '<button class="btn btn-primary" id="go-parallel">⚡ Open in parallel · ₹29 (demo)</button>' +
+          (d.primaryPartner ? '<button class="btn btn-ghost" id="close-primary">🕊 Gently pause ' + esc(primaryName) + '</button>' : '') +
+          '<button class="btn btn-ghost" id="not-now" style="background:transparent; border:none; box-shadow:none">Not now</button>' +
+        '</div>' +
+      '</div>');
+    if (!changed) return;
+    document.getElementById('go-parallel').onclick = async () => {
+      if (!confirm('⚡ The Concurrency Key\n\nRun this conversation in parallel with ' + primaryName + ', without ending either.\n\nDemo event: no real payment. Unlock parallel?')) return;
+      await api('/api/chats/' + convId + '/parallel', { body: {} });
+      toast('Parallel unlocked ⚡');
+      hardRefresh();
+    };
+    if (d.primaryPartner) document.getElementById('close-primary').onclick = async () => {
+      if (!confirm('🕊 Gently pause your chat with ' + primaryName + '?\n\nThe thread is kept and you can reopen it later — this just frees your slot so ' + d.partner.firstName + ' can begin.')) return;
+      await api('/api/chats/' + d.primaryPartner.id + '/close', { body: { kind: 'pause' } });
+      toast('Paused softly 🕊 — thread saved');
+      hardRefresh();
+    };
+    document.getElementById('not-now').onclick = () => { location.href = '/app.html'; };
+  } else if (d.status === 'closed') {
+    showComposer(false);
+    const changed = setSlot(slot,
+      '<div class="soft-panel">' +
+        '<div class="ic">🕊</div>' +
+        '<h4>This conversation is paused.</h4>' +
+        '<p>' + (d.closedByMe ? 'You paused this softly.' : esc(d.partner.firstName) + ' paused this softly.') + ' The thread is kept — reopen it whenever you like.</p>' +
+        '<div class="soft-actions"><button class="btn btn-primary" id="reopen">Reopen conversation</button></div>' +
+      '</div>');
+    if (!changed) return;
+    document.getElementById('reopen').onclick = async () => {
+      const r = await api('/api/chats/' + convId + '/reopen', { body: {} });
+      if (r.locked) toast('Reopened — but it\'s locked behind your current story.');
+      else toast('Reopened 🌱');
+      hardRefresh();
+    };
+  } else {
+    setSlot(slot, '');
+    showComposer(true);
+  }
+}
+
+// ---------- full profile (matched) ----------
+function openFullProfile(d) {
+  const p = d.partner;
+  const wrap = document.getElementById('fp-wrap');
+  wrap.innerHTML =
+    '<div class="fp-top"><span class="tiny" style="font-weight:800; letter-spacing:0.14em">💘 FULL PROFILE — MATCHED</span>' +
+    '<button class="fp-close" id="fp-close">Close</button></div>' +
+    '<div class="fp-photo"><img src="' + photoUrl(p.photos[0], 3) + '" alt=""></div>' +
+    '<div class="fp-name">' + esc(p.firstName) + '<span>' + p.age + '</span></div>' +
+    '<div class="fp-chips">' +
+      '<span class="chip">📏 ' + esc(p.height) + '</span><span class="chip">💼 ' + esc(p.job) + '</span><span class="chip">🎓 ' + esc(p.education) + '</span>' +
+    '</div>' +
+    (p.about ? '<div class="fp-block"><div class="q">About</div><p style="font-size:15.5px; line-height:1.6">' + esc(p.about) + '</p></div>' : '') +
+    p.photos.slice(1).map((ph) => '<div class="fp-photo"><img src="' + photoUrl(ph, 3) + '" loading="lazy" alt=""></div>').join('') +
+    p.prompts.map((pr) => '<div class="fp-block"><div class="q">' + esc(pr.q) + '</div><div class="a">' + esc(pr.a) + '</div></div>').join('');
+  document.getElementById('fp-overlay').classList.add('open');
+  document.getElementById('fp-close').onclick = () => document.getElementById('fp-overlay').classList.remove('open');
+}
+
+// ---------- header menu (pause / soft exit) ----------
+const menuPop = document.getElementById('menu-pop');
+document.getElementById('menu-btn').addEventListener('click', () => menuPop.classList.toggle('open'));
+document.addEventListener('click', (e) => {
+  if (!document.getElementById('head-menu').contains(e.target)) menuPop.classList.remove('open');
+});
+document.getElementById('menu-pause').addEventListener('click', async () => {
+  menuPop.classList.remove('open');
+  if (!state) return;
+  if (!confirm('⏸ Pause this conversation with ' + state.partner.firstName + '?\n\nThe thread is kept; either of you can reopen it. This frees your active slot.')) return;
+  await api('/api/chats/' + convId + '/close', { body: { kind: 'pause' } });
+  toast('Paused softly ⏸');
+  hardRefresh();
+});
+document.getElementById('menu-exit').addEventListener('click', async () => {
+  menuPop.classList.remove('open');
+  if (!state) return;
+  if (!confirm('🕊 Exit softly?\n\nThis ends the story with ' + state.partner.firstName + ' — gently and finally. They\'ll see a kind note, never a rejection.')) return;
+  await api('/api/chats/' + convId + '/close', { body: { kind: 'soft' } });
+  toast('Closed with kindness 🕊');
+  hardRefresh();
+});
+
+// ---------- voice notes ----------
+let rec = null;
+const micBtn = document.getElementById('mic');
+
+function setMicState(d) {
+  const usable = d.status === 'active' || d.status === 'matched';
+  micBtn.style.display = usable ? 'block' : 'none';
+  micBtn.classList.toggle('locked-mic', !d.voiceUnlocked);
+  micBtn.title = d.voiceUnlocked ? 'Voice note' : 'Voice unlocks at the second reveal';
+}
+
+micBtn.addEventListener('click', async () => {
+  if (!state) return;
+  if (!state.voiceUnlocked) { toast('🎙 Voice unlocks at the second reveal — keep talking.'); return; }
+  if (rec) { stopRec(true); return; }
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const mime = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4'].find((m) => MediaRecorder.isTypeSupported(m)) || '';
+    const mr = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined);
+    const chunks = [];
+    mr.ondataavailable = (e) => { if (e.data.size) chunks.push(e.data); };
+    rec = { mr, chunks, stream, t0: Date.now(), cancelled: false };
+    mr.onstop = async () => {
+      stream.getTracks().forEach((t) => t.stop());
+      const wasCancelled = rec && rec.cancelled;
+      const blob = new Blob(chunks, { type: mr.mimeType || 'audio/webm' });
+      rec = null;
+      renderComposerNormal();
+      if (wasCancelled) return;
+      if (blob.size < 800) { toast('That was too quick — hold a thought 🎙'); return; }
+      if (blob.size > 2.4 * 1024 * 1024) { toast('Keep voice notes under a minute 🎙'); return; }
+      const dataUrl = await new Promise((ok) => { const r = new FileReader(); r.onload = () => ok(r.result); r.readAsDataURL(blob); });
+      try {
+        const resp = await api('/api/chats/' + convId + '/voice', { body: { audio: dataUrl } });
+        toast('Voice note sent 🎙');
+        await refresh();
+      } catch (e) { toast(e.message); }
+    };
+    mr.start();
+    renderComposerRecording();
+    rec.timer = setInterval(() => {
+      if (!rec) return;
+      const s = Math.floor((Date.now() - rec.t0) / 1000);
+      const el = document.getElementById('rec-time');
+      if (el) el.textContent = Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+      if (s >= 60) stopRec(true);
+    }, 250);
+  } catch (e) {
+    toast('Microphone not available — check permissions 🎙');
+  }
+});
+
+function renderComposerRecording() {
+  document.getElementById('input-box').innerHTML =
+    '<div class="rec-bar"><span class="rec-dot"></span><span class="rec-time" id="rec-time">0:00</span>' +
+    '<span class="rec-hint">recording… tap ✕ to discard</span>' +
+    '<button class="rnd" style="width:34px;height:34px;background:none;border:none;font-size:16px" id="rec-cancel">✕</button></div>';
+  micBtn.textContent = '⏹';
+  document.getElementById('rec-cancel').onclick = () => stopRec(false);
+  document.getElementById('send').style.display = 'none';
+}
+function renderComposerNormal() {
+  document.getElementById('input-box').innerHTML = '<textarea id="input" rows="1" placeholder="Say something real…"></textarea>';
+  micBtn.textContent = '🎤';
+  document.getElementById('send').style.display = 'block';
+  bindInput();
+}
+function stopRec(send) {
+  if (!rec) return;
+  clearInterval(rec.timer);
+  rec.cancelled = !send;
+  rec.mr.stop();
+}
+
+// ---------- state ----------
+async function applyState(d, { animateStage } = {}) {
+  const firstLoad = !state;
+  state = d;
+  renderHeader(d);
+  appendMessages(d.messages);
+  renderMatchSlot(d);
+  renderSoft(d);
+  setMicState(d);
+
+  document.getElementById('head-menu').style.display =
+    (d.status === 'active' || d.status === 'matched') ? 'block' : 'none';
+
+  if (!wasMatched && d.matched && !firstLoad) toast("💘 It's a match — full profiles unlocked!");
+  wasMatched = d.matched;
+
+  const photo = d.partner.photos[0];
+  if (photo && !reveal) {
+    reveal = GlassReveal(document.getElementById('pinned-photo'), photo, d.stage);
+    GlassReveal(document.getElementById('head-photo'), photo, Math.min(d.stage, 3));
+    knownStage = d.stage;
+  } else if (reveal && d.stage !== knownStage) {
+    const newStage = d.stage;
+    if (animateStage !== false && !firstLoad) {
+      document.getElementById('pinned').classList.remove('collapsed');
+      announceStage(newStage);
+      toast(STAGE_TOASTS[newStage] || '');
+      await reveal.setStage(newStage);
+      const hp = document.getElementById('head-photo');
+      hp.innerHTML = '';
+      GlassReveal(hp, photo, newStage);
+    } else {
+      reveal.setStage(newStage, { animate: false });
+    }
+    knownStage = newStage;
+  }
+
+  if (d.expired) {
+    const input = document.getElementById('input');
+    if (input) { input.disabled = true; input.placeholder = 'This thread dissolved after 24 quiet hours.'; }
+    document.getElementById('send').disabled = true;
+  }
+}
+
+document.getElementById('head-photo').addEventListener('click', () => {
+  document.getElementById('pinned').classList.toggle('collapsed');
+});
+
+function hardRefresh() {
+  reveal = null; lastMsgId = 0; knownStage = -1; state = null;
+  document.getElementById('thread').innerHTML = '';
+  document.getElementById('pinned-photo').innerHTML = '';
+  document.getElementById('head-photo').innerHTML = '';
+  refresh();
+}
+
+async function refresh() {
+  try {
+    const d = await api('/api/chats/' + convId);
+    await applyState(d);
+  } catch (e) {
+    if (e.status === 404) { location.href = '/app.html'; }
+  }
+}
+
+function bindInput() {
+  const input = document.getElementById('input');
+  if (!input) return;
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
+  });
+}
+
+document.getElementById('send').addEventListener('click', sendMsg);
+bindInput();
+
+async function sendMsg() {
+  const input = document.getElementById('input');
+  if (!input) return;
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  try {
+    const r = await api('/api/chats/' + convId + '/messages', { body: { text } });
+    if (!r.meaningful) toast('Too short to count toward a reveal 😉');
+    await refresh();
+  } catch (e) {
+    input.value = text;
+    if (e.code === 'LOCKED') refresh();
+    else toast(e.message);
+  }
+  input.focus();
+}
+
+refresh();
+setInterval(() => { if (!rec) refresh(); }, 3000);
+</script>
+</body>
+</html>

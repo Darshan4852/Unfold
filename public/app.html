@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f6efe4">
+<title>UNFOLD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@1,400..700&family=Manrope:wght@300..800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles/base.css">
+<style>
+  body { padding-bottom: 96px; }
+  header.top {
+    position: sticky; top: 0; z-index: 50; display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 18px; backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+    background: rgba(246, 239, 228, 0.78); border-bottom: 1px solid var(--line);
+  }
+  .logo { font-weight: 800; letter-spacing: 0.16em; font-size: 15px;
+    background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .counter-pill { font-size: 12px; font-weight: 800; color: var(--ink-soft); background: rgba(255,255,255,0.7); border: 1px solid var(--glass-border); border-radius: 999px; padding: 6px 12px; }
+  main { width: min(560px, 100% - 24px); margin: 14px auto 0; }
+
+  nav.tabs {
+    position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%); z-index: 60;
+    display: flex; gap: 3px; padding: 6px; max-width: calc(100% - 16px);
+    background: rgba(255,255,255,0.8); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border); border-radius: 999px; box-shadow: var(--shadow);
+  }
+  nav.tabs button {
+    border: none; background: transparent; padding: 10px 16px; border-radius: 999px;
+    font-weight: 800; font-size: 13.5px; color: var(--ink-soft); cursor: pointer; transition: all 0.25s ease;
+    position: relative; white-space: nowrap;
+  }
+  nav.tabs button.active { background: var(--grad); color: #fff; box-shadow: var(--glow-rose); }
+  nav.tabs button .dot { position: absolute; top: 5px; right: 8px; width: 9px; height: 9px; border-radius: 50%; background: var(--rose); border: 1.5px solid #fff; }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; animation: fade-up 0.4s ease; }
+  @keyframes fade-up { from { opacity: 0; transform: translateY(10px); } }
+
+  /* ---- discover: editorial profile ---- */
+  .meta-row { display: flex; justify-content: space-between; align-items: center; margin: 4px 6px 12px; }
+  .meta-row .count { font-size: 11px; font-weight: 800; letter-spacing: 0.14em; color: var(--ink-faint); }
+  .meta-row .count b { color: var(--rose); }
+
+  .hero-shot { position: relative; border-radius: 26px; overflow: hidden; box-shadow: var(--shadow); }
+  .hero-shot .photo-frame { aspect-ratio: 3 / 3.8; border-radius: 26px; }
+  .hero-scrim {
+    position: absolute; left: 0; right: 0; bottom: 0; z-index: 5; pointer-events: none;
+    padding: 90px 22px 20px;
+    background: linear-gradient(180deg, transparent, rgba(20, 12, 8, 0.35) 45%, rgba(20, 12, 8, 0.82));
+  }
+  .hero-scrim h2 { font-family: var(--font-serif); font-style: italic; font-weight: 500; font-size: 42px; letter-spacing: -0.01em; line-height: 1; color: #fff; text-shadow: 0 2px 24px rgba(0,0,0,0.4); }
+  .hero-scrim h2 span { font-family: var(--font-ui); font-style: normal; font-weight: 300; font-size: 30px; color: rgba(255,255,255,0.82); margin-left: 8px; }
+  .hero-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
+  .chip { font-size: 12px; font-weight: 700; color: #fff; background: rgba(255,255,255,0.18); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.28); padding: 6px 12px; border-radius: 999px; }
+  .glass-note { position: absolute; top: 16px; right: 16px; z-index: 5; font-size: 10.5px; font-weight: 800; letter-spacing: 0.1em; color: #fff; background: rgba(20,12,8,0.42); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.28); padding: 7px 12px; border-radius: 999px; }
+
+  .prompt { background: var(--glass); backdrop-filter: blur(14px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 20px 22px; margin-top: 14px; box-shadow: var(--shadow); }
+  .prompt .q { font-size: 10.5px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--rose); margin-bottom: 8px; }
+  .prompt .a { font-family: var(--font-serif); font-style: italic; font-size: 22px; line-height: 1.4; color: var(--ink); }
+  .about-block { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 20px; padding: 20px 22px; margin-top: 14px; box-shadow: var(--shadow); }
+  .about-block .q { font-size: 10.5px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--amber); margin-bottom: 8px; }
+  .about-block p { font-size: 16px; line-height: 1.6; color: var(--ink); }
+  .second-shot { border-radius: 22px; overflow: hidden; margin-top: 14px; box-shadow: var(--shadow); }
+  .second-shot .photo-frame { aspect-ratio: 4 / 3.4; border-radius: 22px; }
+
+  .actions { display: grid; grid-template-columns: 68px 1fr; gap: 10px; margin-top: 18px; }
+  .skip-btn {
+    border-radius: 999px; border: 1px solid var(--line); background: rgba(255,255,255,0.6);
+    font-size: 22px; color: var(--ink-soft); cursor: pointer; transition: all 0.2s ease;
+  }
+  .skip-btn:hover { background: #fff; color: var(--ink); }
+  .empty-state { text-align: center; padding: 64px 26px; }
+  .empty-state .big { font-size: 46px; margin-bottom: 14px; }
+  .empty-state h3 { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
+  .empty-state p { color: var(--ink-soft); line-height: 1.6; }
+
+  /* compose sheet */
+  .sheet-back { position: fixed; inset: 0; background: rgba(40, 24, 14, 0.42); backdrop-filter: blur(5px); z-index: 90; display: none; }
+  .sheet-back.open { display: flex; align-items: flex-end; justify-content: center; animation: fade-up 0.25s ease; }
+  .sheet { width: min(560px, 100%); border-radius: 26px 26px 0 0; padding: 24px 20px 32px; background: var(--cream); border: 1px solid var(--glass-border); border-bottom: none; box-shadow: 0 -20px 50px -20px rgba(80,45,20,0.35); }
+  .sheet h3 { font-family: var(--font-serif); font-style: italic; font-weight: 500; font-size: 24px; margin-bottom: 4px; }
+  .sheet .sub { font-size: 13px; color: var(--ink-soft); font-weight: 600; }
+  .sheet .sub b { color: var(--rose); }
+  .sheet textarea { width: 100%; margin-top: 14px; min-height: 100px; border-radius: 16px; border: 1px solid var(--line); background: rgba(255,255,255,0.8); padding: 14px 16px; outline: none; }
+  .sheet textarea:focus { border-color: var(--rose); box-shadow: 0 0 0 4px rgba(229,69,95,0.14); }
+
+  /* chats list */
+  .chat-item { display: flex; gap: 14px; align-items: center; padding: 13px; margin-bottom: 12px; text-decoration: none; transition: transform 0.2s ease, background 0.2s ease; position: relative; }
+  .chat-item:active { transform: scale(0.985); }
+  .chat-item:hover { background: var(--glass-strong); }
+  .chat-item.is-locked { border: 1px solid rgba(229, 69, 95, 0.4); }
+  .chat-item.is-closed { opacity: 0.72; }
+  .chat-thumb { width: 68px; height: 68px; border-radius: 18px; flex-shrink: 0; }
+  .chat-thumb .photo-frame { width: 100%; height: 100%; border-radius: 18px; }
+  .chat-body { flex: 1; min-width: 0; }
+  .chat-body .nm { font-weight: 800; font-size: 16.5px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .chat-body .preview { font-size: 13.5px; color: var(--ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 3px; }
+  .badge { font-size: 10px; font-weight: 800; letter-spacing: 0.06em; padding: 3px 9px; border-radius: 999px; }
+  .badge.wait { background: rgba(224, 161, 46, 0.18); color: #9c7415; }
+  .badge.reply { background: rgba(229, 69, 95, 0.16); color: var(--rose); }
+  .badge.pending { background: rgba(120, 85, 55, 0.12); color: var(--ink-soft); }
+  .badge.locked { background: var(--grad); color: #fff; }
+  .badge.gone, .badge.closed { background: rgba(120,85,55,0.12); color: var(--ink-faint); }
+  .badge.par { background: rgba(224, 161, 46, 0.18); color: #9c7415; }
+
+  /* status card (on profile / You) */
+  .status-card { background: linear-gradient(120deg, rgba(229,69,95,0.09), rgba(242,137,74,0.09));
+    border: 1px solid rgba(229,69,95,0.28); border-radius: 18px; padding: 16px 18px; margin-top: 14px; }
+  .status-card .s-tag { font-size: 10.5px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rose); }
+  .status-card p { font-family: var(--font-serif); font-style: italic; font-size: 19px; line-height: 1.4; color: var(--ink); margin-top: 6px; }
+
+  /* status composer (You) */
+  .type-pick { display: flex; flex-wrap: wrap; gap: 8px; }
+  .type-btn { border: 1px solid var(--line); background: rgba(255,255,255,0.6); color: var(--ink-soft);
+    padding: 8px 14px; border-radius: 999px; font-weight: 700; font-size: 13px; cursor: pointer; transition: all 0.2s ease; }
+  .type-btn.on { background: var(--grad); color: #fff; border-color: transparent; box-shadow: var(--glow-rose); }
+  .del-status { margin-top: 12px; background: none; border: none; color: var(--ink-faint); font-size: 12.5px; font-weight: 700; text-decoration: underline; cursor: pointer; }
+
+  /* profile (You) */
+  .you-photos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .you-cell { position: relative; aspect-ratio: 3/4; border-radius: 16px; overflow: hidden; box-shadow: var(--shadow); }
+  .you-cell img { width: 100%; height: 100%; object-fit: cover; }
+  .you-cell.add { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+    border: 2px dashed rgba(120,85,55,0.3); background: rgba(255,255,255,0.45); cursor: pointer; color: var(--ink-faint); font-weight: 700; box-shadow: none; text-align: center; }
+  .you-cell .del-photo { position: absolute; top: 6px; right: 6px; width: 26px; height: 26px; border-radius: 50%; border: none;
+    background: rgba(20,12,8,0.55); color: #fff; font-size: 13px; cursor: pointer; backdrop-filter: blur(6px); }
+  .you-cell .match-only { position: absolute; bottom: 6px; left: 6px; font-size: 9.5px; font-weight: 800; letter-spacing: 0.04em;
+    background: rgba(20,12,8,0.55); color: #fff; padding: 3px 8px; border-radius: 999px; backdrop-filter: blur(6px); }
+  .you-head { display: flex; align-items: baseline; gap: 10px; }
+  .you-head h2 { font-family: var(--font-serif); font-style: italic; font-weight: 500; font-size: 32px; }
+  .you-head span { font-size: 22px; color: var(--ink-soft); font-weight: 300; }
+  .you-head-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 16px 2px 2px; flex-wrap: wrap; }
+  .you-head-row .btn-ghost { white-space: nowrap; }
+
+  /* profile preview overlay (You tab) */
+  .preview-overlay { position: fixed; inset: 0; z-index: 120; background: var(--cream); overflow-y: auto; display: none; }
+  .preview-overlay.open { display: block; animation: fade-up 0.3s ease; }
+  .preview-wrap { width: min(560px, 100% - 24px); margin: 14px auto 60px; }
+  .preview-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .fp-close { border: 1px solid var(--line); background: rgba(255,255,255,0.7); border-radius: 999px; padding: 9px 18px; font-weight: 800; cursor: pointer; }
+  .you-note { font-size: 12.5px; color: var(--ink-faint); margin: 6px 2px 2px; }
+
+  /* feedback */
+  .hearts { display: flex; gap: 10px; font-size: 34px; cursor: pointer; user-select: none; }
+  .hearts span { filter: grayscale(1) opacity(0.4); transition: all 0.2s ease; }
+  .hearts span.on { filter: none; transform: scale(1.12); }
+  .join-pick { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 8px; }
+  .join-pick input { display: none; }
+  .join-pick span { display: block; text-align: center; padding: 12px 6px; border-radius: 14px; font-weight: 700; font-size: 13.5px; border: 1px solid var(--line); background: rgba(255,255,255,0.6); cursor: pointer; transition: all 0.2s ease; color: var(--ink-soft); }
+  .join-pick input:checked + span { background: var(--grad); color: #fff; border-color: transparent; box-shadow: var(--glow-rose); }
+</style>
+</head>
+<body>
+<div class="orbs"><div class="orb peach"></div><div class="orb rose"></div><div class="orb amber"></div></div>
+
+<header class="top">
+  <div class="logo">U N F O L D</div>
+  <div style="display:flex; gap:8px; align-items:center">
+    <span class="counter-pill" id="opener-pill">· openers</span>
+    <button class="counter-pill" id="logout" style="cursor:pointer">exit</button>
+  </div>
+</header>
+
+<main>
+  <section class="tab-panel active" id="panel-discover"></section>
+  <section class="tab-panel" id="panel-chats"></section>
+  <section class="tab-panel" id="panel-you"></section>
+  <section class="tab-panel" id="panel-feedback">
+    <form class="glass" id="fb-form" style="padding:26px 22px; margin-top:6px">
+      <h2 style="font-family:var(--font-serif); font-style:italic; font-weight:500; font-size:28px">How did it <span style="color:var(--rose)">feel</span>?</h2>
+      <p class="muted" style="font-size:14px; margin:8px 0 22px">You're co-designing UNFOLD tonight. Be brutally honest — we can take it.</p>
+      <div class="field"><label>Rate the experience</label>
+        <div class="hearts" id="hearts"><span>❤️</span><span>❤️</span><span>❤️</span><span>❤️</span><span>❤️</span></div>
+      </div>
+      <div class="field" style="margin-top:22px"><label>Would you join the global release?</label>
+        <div class="join-pick">
+          <label><input type="radio" name="wouldJoin" value="yes"><span>Yes 🙌</span></label>
+          <label><input type="radio" name="wouldJoin" value="maybe"><span>Maybe 🤔</span></label>
+          <label><input type="radio" name="wouldJoin" value="no"><span>Not for me</span></label>
+        </div>
+      </div>
+      <div class="field"><label>Best moment of the night</label><textarea name="bestMoment" maxlength="500" placeholder="The shatter? The wait? A person?"></textarea></div>
+      <div class="field"><label>One thing you'd change</label><textarea name="changeText" maxlength="500"></textarea></div>
+      <button class="btn btn-primary" type="submit" style="width:100%" id="fb-submit">Send feedback</button>
+    </form>
+  </section>
+</main>
+
+<nav class="tabs">
+  <button data-tab="discover" class="active">Discover</button>
+  <button data-tab="chats">Chats<span class="dot" id="chats-dot" style="display:none"></span></button>
+  <button data-tab="you">You</button>
+  <button data-tab="feedback">Feedback</button>
+</nav>
+
+<div class="sheet-back" id="sheet-back">
+  <div class="sheet">
+    <h3 id="sheet-title">Start a conversation</h3>
+    <p class="sub">No likes on UNFOLD — words only. Three openers a day. <b>Make this one count.</b></p>
+    <textarea id="opener-text" maxlength="1000" placeholder="Pick up something from their story…"></textarea>
+    <div style="display:flex; gap:10px; margin-top:16px">
+      <button class="btn btn-ghost" style="flex:1" id="sheet-cancel">Cancel</button>
+      <button class="btn btn-primary" style="flex:2" id="sheet-send">Send opener →</button>
+    </div>
+  </div>
+</div>
+
+<div class="preview-overlay" id="preview-overlay">
+  <div class="preview-wrap" id="preview-wrap"></div>
+</div>
+
+<script src="/vendor/face-api.min.js"></script>
+<script src="/js/facecheck.js"></script>
+<script src="/js/common.js"></script>
+<script>
+let me = null;
+let currentProfile = null;
+let openerFlags = {};
+
+document.querySelectorAll('nav.tabs button').forEach((b) => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('nav.tabs button').forEach((x) => x.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach((x) => x.classList.remove('active'));
+    b.classList.add('active');
+    document.getElementById('panel-' + b.dataset.tab).classList.add('active');
+    if (b.dataset.tab === 'chats') loadChats();
+    if (b.dataset.tab === 'discover') loadDiscover();
+    if (b.dataset.tab === 'you') loadYou();
+  });
+});
+
+document.getElementById('logout').addEventListener('click', async () => {
+  await api('/api/logout', { body: {} });
+  setSessionToken('');
+  location.href = '/';
+});
+
+function setOpenerPill(counters) {
+  document.getElementById('opener-pill').textContent = counters.openersLeft + ' opener' + (counters.openersLeft === 1 ? '' : 's') + ' left';
+}
+
+// ---------- status of the day ----------
+function statusEmoji(type) { return { mood: '🌤', song: '🎵', thought: '💭', today: '📍' }[type] || '💭'; }
+
+// ---------- preview my profile (exactly what a stranger sees in Discover) ----------
+function openProfilePreview(p) {
+  const wrap = document.getElementById('preview-wrap');
+  wrap.innerHTML =
+    '<div class="preview-top"><span class="tiny" style="font-weight:800; letter-spacing:0.14em">👁 THIS IS WHAT OTHERS SEE</span>' +
+    '<button class="fp-close" id="preview-close">Close</button></div>' +
+    '<div class="hero-shot">' +
+      '<div id="pv-ph0"></div>' +
+      '<div class="glass-note">🧊 BEHIND GLASS</div>' +
+      '<div class="hero-scrim">' +
+        '<h2>' + esc(p.firstName) + '<span>' + p.age + '</span></h2>' +
+        '<div class="hero-chips">' +
+          '<span class="chip">📏 ' + esc(p.height) + '</span>' +
+          '<span class="chip">💼 ' + esc(p.job) + '</span>' +
+          '<span class="chip">🎓 ' + esc(p.education) + '</span>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    (p.status ? '<div class="status-card"><span class="s-tag">' + esc(p.status.label) + ' · today</span><p>“' + esc(p.status.text) + '”</p></div>' : '') +
+    (p.about ? '<div class="about-block"><div class="q">About ' + esc(p.firstName) + '</div><p>' + esc(p.about) + '</p></div>' : '') +
+    '<div class="prompt"><div class="q">' + esc(p.prompts[0].q) + '</div><div class="a">' + esc(p.prompts[0].a) + '</div></div>' +
+    '<div class="second-shot"><div id="pv-ph1"></div></div>' +
+    '<div class="prompt"><div class="q">' + esc(p.prompts[1].q) + '</div><div class="a">' + esc(p.prompts[1].a) + '</div></div>' +
+    '<div class="prompt"><div class="q">' + esc(p.prompts[2].q) + '</div><div class="a">' + esc(p.prompts[2].a) + '</div></div>';
+
+  p.photos.slice(0, 2).forEach((photo, i) => {
+    const holder = document.getElementById('pv-ph' + i);
+    if (holder && photo) GlassReveal(holder, photo, 0);
+  });
+  document.getElementById('preview-close').onclick = () => document.getElementById('preview-overlay').classList.remove('open');
+  document.getElementById('preview-overlay').classList.add('open');
+}
+
+// ---------- discover ----------
+async function loadDiscover() {
+  const panel = document.getElementById('panel-discover');
+  let d;
+  try {
+    d = await api('/api/discover');
+  } catch (e) {
+    if (e.code === 'MATCHING_CLOSED') { location.href = '/lobby.html'; return; }
+    panel.innerHTML = '<div class="glass empty-state"><div class="big">😵</div><h3>Hiccup</h3><p>' + esc(e.message) + '</p></div>';
+    return;
+  }
+  setOpenerPill(d.counters);
+
+  if (d.done) {
+    panel.innerHTML = '<div class="glass empty-state"><div class="big">' + (d.reason === 'DAILY_CAP' ? '🌙' : '🫖') + '</div>' +
+      '<h3>' + (d.reason === 'DAILY_CAP' ? "That's your ten for today" : 'The room is quiet') + '</h3>' +
+      '<p>' + (d.reason === 'DAILY_CAP'
+        ? 'Ten stories, read properly. Now go where UNFOLD actually happens — your chats.'
+        : 'No new profiles right now. New people appear here as the host lets them in.') + '</p></div>';
+    return;
+  }
+
+  currentProfile = d.profile;
+  const p = d.profile;
+  panel.innerHTML =
+    '<div class="meta-row">' +
+      '<span class="count">PROFILE <b>' + d.position + '</b> OF ' + d.counters.profilesPerDay + ' TODAY</span>' +
+      '<span class="tiny">the face stays earned</span>' +
+    '</div>' +
+    '<div class="hero-shot">' +
+      '<div id="ph0"></div>' +
+      '<div class="glass-note">🧊 BEHIND GLASS</div>' +
+      '<div class="hero-scrim">' +
+        '<h2>' + esc(p.firstName) + '<span>' + p.age + '</span></h2>' +
+        '<div class="hero-chips">' +
+          '<span class="chip">📏 ' + esc(p.height) + '</span>' +
+          '<span class="chip">💼 ' + esc(p.job) + '</span>' +
+          '<span class="chip">🎓 ' + esc(p.education) + '</span>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    (p.status ? '<div class="status-card"><span class="s-tag">' + esc(p.status.label) + ' · today</span><p>“' + esc(p.status.text) + '”</p></div>' : '') +
+    (p.about ? '<div class="about-block"><div class="q">About ' + esc(p.firstName) + '</div><p>' + esc(p.about) + '</p></div>' : '') +
+    '<div class="prompt"><div class="q">' + esc(p.prompts[0].q) + '</div><div class="a">' + esc(p.prompts[0].a) + '</div></div>' +
+    '<div class="second-shot"><div id="ph1"></div></div>' +
+    '<div class="prompt"><div class="q">' + esc(p.prompts[1].q) + '</div><div class="a">' + esc(p.prompts[1].a) + '</div></div>' +
+    '<div class="prompt"><div class="q">' + esc(p.prompts[2].q) + '</div><div class="a">' + esc(p.prompts[2].a) + '</div></div>' +
+    '<div class="actions">' +
+      '<button class="skip-btn" id="skip" title="Skip — never shown again">✕</button>' +
+      '<button class="btn btn-primary" id="start">Start a conversation</button>' +
+    '</div>';
+
+  p.photos.forEach((photo, i) => {
+    const holder = document.getElementById('ph' + i);
+    if (holder && photo) GlassReveal(holder, photo, 0);
+  });
+
+  document.getElementById('skip').addEventListener('click', async () => {
+    await api('/api/discover/skip', { body: { targetId: p.id } });
+    loadDiscover();
+  });
+  document.getElementById('start').addEventListener('click', () => {
+    openerFlags = {};
+    document.getElementById('sheet-title').textContent = 'Open with ' + p.firstName;
+    document.getElementById('opener-text').value = '';
+    document.getElementById('sheet-back').classList.add('open');
+    setTimeout(() => document.getElementById('opener-text').focus(), 200);
+  });
+}
+
+document.getElementById('sheet-cancel').addEventListener('click', () => {
+  document.getElementById('sheet-back').classList.remove('open');
+});
+document.getElementById('sheet-back').addEventListener('click', (e) => {
+  if (e.target.id === 'sheet-back') e.currentTarget.classList.remove('open');
+});
+
+document.getElementById('sheet-send').addEventListener('click', async () => {
+  const text = document.getElementById('opener-text').value.trim();
+  if (!text) { toast('Write something first ✍️'); return; }
+  if (!currentProfile) return;
+  const btn = document.getElementById('sheet-send');
+  btn.disabled = true;
+  try {
+    const r = await api('/api/opener', { body: { targetId: currentProfile.id, text, ...openerFlags } });
+    document.getElementById('sheet-back').classList.remove('open');
+    setOpenerPill(r.counters);
+    if (!r.meaningful) toast('Sent — but too short to count toward a reveal 😉');
+    else toast('Opener sent ✨ Now the wait begins.');
+    location.href = '/chat.html?id=' + r.convId;
+  } catch (e) {
+    if (e.code === 'INBOX_FULL') {
+      if (confirm('💌 Strong-Vibe Override\n\n' + e.message + " Their day's inbox is full — but a strong vibe can knock anyway (₹19).\n\nDemo event: no real payment. Send it through?")) {
+        openerFlags.vibeOverride = true;
+        btn.disabled = false;
+        btn.click();
+        return;
+      }
+    } else {
+      toast(e.message);
+      if (e.code === 'ALREADY_EXISTS') loadDiscover();
+    }
+  }
+  btn.disabled = false;
+});
+
+// ---------- chats ----------
+function statusBadge(c) {
+  if (c.status === 'matched') return '<span class="badge locked">💘 MATCHED</span>';
+  if (c.status === 'ended') return '<span class="badge gone">🕊 CLOSED KINDLY</span>';
+  if (c.status === 'closed') return '<span class="badge closed">PAUSED</span>';
+  if (c.status === 'locked') return '<span class="badge locked">🔒 NEW REPLY</span>';
+  if (c.awaitingMatch) return '<span class="badge locked">💥 REVEALED — YOUR CALL</span>';
+  if (c.status === 'pending') return '<span class="badge pending">AWAITING REPLY</span>';
+  if (c.parallel) return (c.awaitingThem ? '<span class="badge wait">AWAITING THEM</span>' : '<span class="badge reply">YOUR TURN</span>') + ' <span class="badge par">⚡ PARALLEL</span>';
+  return c.awaitingThem ? '<span class="badge wait">AWAITING THEM</span>' : '<span class="badge reply">YOUR TURN</span>';
+}
+
+async function loadChats() {
+  const panel = document.getElementById('panel-chats');
+  const { chats, notifications } = await api('/api/chats');
+  document.getElementById('chats-dot').style.display = notifications > 0 ? 'block' : 'none';
+
+  if (!chats.length) {
+    panel.innerHTML = '<div class="glass empty-state"><div class="big">🫧</div><h3>No conversations yet</h3><p>Spend an opener on someone whose words got to you. You can have three going at once.</p></div>';
+    return;
+  }
+  panel.innerHTML = chats.map((c) => {
+    return '<a class="glass chat-item ' + (c.status === 'locked' ? 'is-locked' : '') + (c.status === 'closed' ? 'is-closed' : '') + '" href="/chat.html?id=' + c.id + '">' +
+      '<div class="chat-thumb"><div class="photo-frame" data-photo="' + c.id + '"></div></div>' +
+      '<div class="chat-body">' +
+        '<div class="nm">' + esc(c.partner.firstName) + ' ' + statusBadge(c) + '</div>' +
+        '<div class="preview">' + (c.status === 'locked' ? '💫 ' + esc(c.partner.firstName) + ' replied — tap to unlock' : esc(c.lastText)) + '</div>' +
+        '<div style="margin-top:6px">' + ladderHtml(c.stage, true) + ' <span class="tiny" style="margin-left:6px">' + esc(STAGE_LABELS[c.stage]) + '</span></div>' +
+      '</div>' +
+      '<span class="tiny">' + timeAgo(c.lastAt) + '</span>' +
+    '</a>';
+  }).join('');
+
+  chats.forEach((c) => {
+    const holder = panel.querySelector('[data-photo="' + c.id + '"]');
+    if (holder && c.photo) GlassReveal(holder, c.photo, c.stage, {});
+  });
+}
+
+setInterval(async () => {
+  try {
+    const s = await api('/api/state', { noRedirect: true });
+    if (!s.matchingOpen) { location.href = '/lobby.html'; return; }
+    if (document.getElementById('panel-chats').classList.contains('active')) loadChats();
+    else { // keep the notification dot fresh even off-tab
+      const { notifications } = await api('/api/chats');
+      document.getElementById('chats-dot').style.display = notifications > 0 ? 'block' : 'none';
+    }
+  } catch {}
+}, 4000);
+
+// ---------- you (own profile) ----------
+async function loadYou() {
+  const panel = document.getElementById('panel-you');
+  const data = await api('/api/me');
+  const p = data.profile;
+  const pool = data.promptPool || [];
+  const maxPhotos = data.maxPhotos || 6;
+
+  const photoCells = p.photos.map((ph, i) =>
+    '<div class="you-cell">' +
+      '<img src="' + photoUrl(ph, 3) + '" alt="">' +
+      (i >= 2 ? '<span class="match-only">💘 match-only</span>' : '') +
+      (p.photos.length > 2 ? '<button type="button" class="del-photo" data-id="' + ph.id + '" title="Remove">✕</button>' : '') +
+    '</div>'
+  ).join('');
+  const addCell = p.photos.length < maxPhotos
+    ? '<div class="you-cell add" id="add-photo"><span style="font-size:24px">＋</span><span class="tiny">add photo<br>(' + p.photos.length + '/' + maxPhotos + ')</span></div>'
+    : '';
+
+  const promptGroup = (i) => {
+    const opts = pool.map((q) => '<option' + (q === p.prompts[i].q ? ' selected' : '') + '>' + esc(q) + '</option>').join('');
+    return '<div class="field"><label>Prompt ' + (i + 1) + '</label><select class="you-q" data-i="' + i + '">' + opts + '</select></div>' +
+      '<div class="field"><textarea class="you-a" data-i="' + i + '" maxlength="240">' + esc(p.prompts[i].a) + '</textarea></div>';
+  };
+
+  const st = data.status;
+  const types = data.statusTypes || { mood: '🌤 Mood', song: '🎵 Song', thought: '💭 Thought', today: '📍 Today' };
+  const hrsLeft = st ? Math.max(1, Math.round(st.expiresInMin / 60)) : 0;
+  const statusCard =
+    '<div class="glass status-composer" id="status-composer" style="padding:20px; margin-bottom:16px">' +
+      '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px">' +
+        '<h3 style="font-family:var(--font-serif); font-style:italic; font-weight:500; font-size:20px">Status of the day</h3>' +
+        (st ? '<span class="tiny" style="font-weight:800; color:var(--amber)">⏳ ' + hrsLeft + 'h left</span>' : '') +
+      '</div>' +
+      '<p class="tiny" style="margin-bottom:12px">A mood, a song, a thought — <b>text only, never a selfie</b>. Vanishes after 24 hours. The face stays earned.</p>' +
+      (st ? '<div class="status-card" style="margin-top:0"><span class="s-tag">' + esc(st.label) + '</span><p>“' + esc(st.text) + '”</p></div>' : '') +
+      '<div class="type-pick" id="type-pick" style="margin-top:12px">' +
+        Object.entries(types).map(([k, v], i) => '<button type="button" class="type-btn' + ((st ? st.type === k : i === 0) ? ' on' : '') + '" data-t="' + k + '">' + esc(v) + '</button>').join('') +
+      '</div>' +
+      '<div style="display:flex; gap:8px; margin-top:10px">' +
+        '<input id="status-text" maxlength="140" placeholder="' + (st ? 'update your status…' : 'what\'s today about?') + '" value="" style="flex:1; padding:12px 14px; border-radius:14px; border:1px solid var(--line); background:rgba(255,255,255,0.8); outline:none">' +
+        '<button class="btn btn-primary btn-sm" id="status-post">Post</button>' +
+      '</div>' +
+      (st ? '<button class="del-status" id="status-clear">clear my status</button>' : '') +
+    '</div>';
+
+  panel.innerHTML =
+    statusCard +
+    '<div class="you-photos">' + photoCells + addCell + '</div>' +
+    '<p class="you-note">This is you, unglassed. Others earn the first two through conversation — photos 3–6 unlock only on a <b>mutual match</b>.</p>' +
+    '<input type="file" id="you-file" accept="image/*" hidden>' +
+    '<div class="you-head-row">' +
+      '<div class="you-head"><h2>' + esc(p.firstName) + '</h2><span>' + p.age + '</span></div>' +
+      '<button class="btn btn-ghost btn-sm" id="preview-btn">👁 Preview my profile</button>' +
+    '</div>' +
+    '<div class="hero-chips" style="margin:8px 2px 0">' +
+      '<span class="chip" style="color:var(--ink); background:rgba(255,255,255,0.7); border-color:var(--line)">📏 ' + esc(p.height) + '</span>' +
+      '<span class="chip" style="color:var(--ink); background:rgba(255,255,255,0.7); border-color:var(--line)">💼 ' + esc(p.job) + '</span>' +
+      '<span class="chip" style="color:var(--ink); background:rgba(255,255,255,0.7); border-color:var(--line)">🎓 ' + esc(p.education) + '</span>' +
+    '</div>' +
+    '<form class="glass" id="you-form" style="padding:22px 20px; margin-top:16px">' +
+      '<div class="field"><label>About you</label><textarea name="about" maxlength="400" placeholder="A few honest lines. This is the first thing people read.">' + esc(p.about || '') + '</textarea></div>' +
+      promptGroup(0) + promptGroup(1) + promptGroup(2) +
+      '<button class="btn btn-primary" type="submit" style="width:100%">Save profile</button>' +
+    '</form>';
+
+  document.getElementById('preview-btn').addEventListener('click', () => openProfilePreview(p));
+
+  // status of the day
+  let statusType = st ? st.type : 'mood';
+  panel.querySelectorAll('.type-btn').forEach((b) => b.addEventListener('click', () => {
+    statusType = b.dataset.t;
+    panel.querySelectorAll('.type-btn').forEach((x) => x.classList.toggle('on', x === b));
+  }));
+  document.getElementById('status-post').addEventListener('click', async () => {
+    const text = document.getElementById('status-text').value.trim();
+    if (!text) { toast('Write your status first ✍️'); return; }
+    try {
+      await api('/api/status', { method: 'PUT', body: { type: statusType, text } });
+      toast('Status posted — live for 24h 🌤');
+      loadYou();
+    } catch (ex) { toast(ex.message); }
+  });
+  const clearBtn = document.getElementById('status-clear');
+  if (clearBtn) clearBtn.addEventListener('click', async () => {
+    await api('/api/status', { method: 'DELETE' });
+    toast('Status cleared');
+    loadYou();
+  });
+
+  // add photo (face-checked, like registration)
+  const fileInput = document.getElementById('you-file');
+  const addBtn = document.getElementById('add-photo');
+  if (addBtn) addBtn.addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', async () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+    toast('Checking for a face… 🔍');
+    try {
+      const url = URL.createObjectURL(file);
+      const img = await new Promise((ok, bad) => { const i = new Image(); i.onload = () => ok(i); i.onerror = bad; i.src = url; });
+      const MAX = 500;
+      const scale = Math.min(1, MAX / Math.max(img.naturalWidth, img.naturalHeight));
+      const c = document.createElement('canvas');
+      c.width = Math.round(img.naturalWidth * scale); c.height = Math.round(img.naturalHeight * scale);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url);
+      const dataUrl = c.toDataURL('image/jpeg', 0.82);
+      const check = await detectFace(await new Promise((ok) => { const i = new Image(); i.onload = () => ok(i); i.src = dataUrl; }));
+      if (!check.ok) { toast('🙈 ' + check.reason); return; }
+      await api('/api/profile/photos', { body: { dataUrl, faceBox: check.faceBox } });
+      toast('Photo added ✨');
+      loadYou();
+    } catch (ex) { toast(ex.message || 'Could not add that photo'); }
+  });
+
+  panel.querySelectorAll('.del-photo').forEach((b) => b.addEventListener('click', async () => {
+    if (!confirm('Remove this photo?')) return;
+    try {
+      await api('/api/profile/photos/' + b.dataset.id, { method: 'DELETE' });
+      loadYou();
+    } catch (ex) { toast(ex.message); }
+  }));
+
+  document.getElementById('you-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const f = new FormData(e.target);
+    const qs = [...panel.querySelectorAll('.you-q')].map((s) => s.value);
+    const as = [...panel.querySelectorAll('.you-a')].map((t) => t.value);
+    if (new Set(qs).size !== 3) { toast('Pick three different prompts'); return; }
+    try {
+      await api('/api/profile', { method: 'PUT', body: {
+        about: f.get('about'),
+        prompts: qs.map((q, i) => ({ q, a: as[i] })),
+      } });
+      toast('Profile saved ✨');
+    } catch (ex) { toast(ex.message); }
+  });
+}
+
+// ---------- feedback ----------
+let rating = 0;
+const hearts = document.querySelectorAll('#hearts span');
+hearts.forEach((h, i) => h.addEventListener('click', () => {
+  rating = i + 1;
+  hearts.forEach((x, j) => x.classList.toggle('on', j <= i));
+}));
+
+document.getElementById('fb-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const f = new FormData(e.target);
+  if (!rating) { toast('Tap a heart first ❤️'); return; }
+  if (!f.get('wouldJoin')) { toast('Would you join the global release?'); return; }
+  try {
+    await api('/api/feedback', { body: {
+      rating, wouldJoin: f.get('wouldJoin'),
+      bestMoment: f.get('bestMoment'), changeText: f.get('changeText'),
+    } });
+    toast('Thank you — this shapes UNFOLD 🧡');
+    document.getElementById('fb-submit').textContent = 'Update feedback';
+  } catch (ex) { toast(ex.message); }
+});
+
+async function loadFeedback() {
+  const { feedback } = await api('/api/feedback');
+  if (!feedback) return;
+  rating = feedback.rating;
+  hearts.forEach((x, j) => x.classList.toggle('on', j < rating));
+  const form = document.getElementById('fb-form');
+  const radio = form.querySelector('input[value="' + feedback.wouldJoin + '"]');
+  if (radio) radio.checked = true;
+  form.bestMoment.value = feedback.bestMoment || '';
+  form.changeText.value = feedback.changeText || '';
+  document.getElementById('fb-submit').textContent = 'Update feedback';
+}
+
+// ---------- boot ----------
+(async () => {
+  me = await api('/api/me');
+  if (!me.matchingOpen) { location.href = '/lobby.html'; return; }
+  setOpenerPill(me.counters);
+  loadDiscover();
+  loadFeedback();
+})();
+</script>
+</body>
+</html>

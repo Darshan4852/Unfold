@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Lobby · UNFOLD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@1,400..700&family=Manrope:wght@300..800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles/base.css">
+<style>
+  body { display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .card { width: min(440px, 100%); padding: 44px 30px; text-align: center; }
+  .pulse {
+    width: 86px; height: 86px; margin: 0 auto 24px; border-radius: 50%;
+    background: var(--grad);
+    display: flex; align-items: center; justify-content: center; font-size: 36px;
+    animation: breathe 2.6s ease-in-out infinite;
+    box-shadow: 0 14px 50px -8px rgba(255, 94, 122, 0.55);
+  }
+  @keyframes breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+  h1 { font-family: var(--font-serif); font-style: italic; font-weight: 500; font-size: 30px; letter-spacing: -0.01em; margin-bottom: 10px; }
+  h1 em { color: var(--rose); }
+  p { color: var(--ink-soft); line-height: 1.6; font-size: 15px; }
+  .dots span { animation: blink 1.4s infinite; display: inline-block; }
+  .dots span:nth-child(2) { animation-delay: 0.2s; } .dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes blink { 0%, 60%, 100% { opacity: 0.25; } 30% { opacity: 1; } }
+  .logout { margin-top: 26px; font-size: 13px; color: var(--ink-faint); background: none; border: none; cursor: pointer; text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="orbs"><div class="orb peach"></div><div class="orb rose"></div><div class="orb amber"></div></div>
+
+<div class="glass card">
+  <div class="pulse">🥂</div>
+  <h1>You're in the <em>room</em>.</h1>
+  <p id="name" style="font-weight:700; margin-bottom:8px"></p>
+  <p>Take a breath. The host will open matching for the whole room at once — no head starts, no early birds.</p>
+  <p style="margin-top:14px" class="tiny">This page wakes up on its own<span class="dots"><span>.</span><span>.</span><span>.</span></span></p>
+  <button class="logout" id="logout">log out</button>
+</div>
+
+<script src="/js/common.js"></script>
+<script>
+async function check() {
+  try {
+    const s = await api('/api/state');
+    if (s.matchingOpen) { location.href = '/app.html'; return; }
+  } catch (e) { if (e.message === 'unauthenticated') return; }
+  setTimeout(check, 3000);
+}
+api('/api/me').then((me) => {
+  document.getElementById('name').textContent = 'Hi ' + me.profile.firstName + ' 👋';
+  check();
+});
+document.getElementById('logout').addEventListener('click', async () => {
+  await api('/api/logout', { body: {} });
+  setSessionToken('');
+  location.href = '/';
+});
+</script>
+</body>
+</html>

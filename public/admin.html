@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Host Console · UNFOLD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@1,400..700&family=Manrope:wght@300..800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles/base.css">
+<style>
+  main { width: min(1100px, 100% - 32px); margin: 24px auto 80px; }
+  h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; }
+  .grid { display: grid; gap: 16px; }
+  .stats { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); margin: 18px 0; }
+  .stat { padding: 18px; text-align: center; }
+  .stat .n { font-family: var(--font-serif); font-size: 38px; font-weight: 600;
+    background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .stat .l { font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); margin-top: 2px; }
+  .panel { padding: 22px; margin-bottom: 18px; }
+  .panel h2 { font-size: 17px; font-weight: 800; margin-bottom: 14px; }
+  .master { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .switch { position: relative; width: 74px; height: 40px; flex-shrink: 0; cursor: pointer; }
+  .switch input { display: none; }
+  .switch .track { position: absolute; inset: 0; border-radius: 999px; background: rgba(120,85,55,0.2); transition: background 0.3s ease; }
+  .switch input:checked + .track { background: linear-gradient(120deg, #7ec98a, #5cb974); }
+  .switch .knob { position: absolute; top: 4px; left: 4px; width: 32px; height: 32px; border-radius: 50%; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.25); transition: left 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+  .switch input:checked ~ .knob { left: 38px; }
+  .caps { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+  .caps .field { margin: 0; }
+  .users { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
+  .user-card { padding: 12px; }
+  .user-card .photos { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .user-card img { aspect-ratio: 3/4; object-fit: cover; border-radius: 10px; width: 100%; }
+  .user-card .nm { font-weight: 800; font-size: 14px; margin-top: 8px; }
+  .user-card .meta { font-size: 11.5px; color: var(--ink-soft); }
+  .user-card button { margin-top: 8px; width: 100%; border: 1px solid rgba(192,57,43,0.35); background: rgba(192,57,43,0.08); color: #c0392b; border-radius: 10px; padding: 7px; font-size: 12px; font-weight: 700; cursor: pointer; }
+  .fb-item { padding: 14px 16px; margin-bottom: 10px; }
+  .fb-item .top { display: flex; justify-content: space-between; gap: 10px; font-size: 13.5px; font-weight: 700; }
+  .fb-item .body { font-size: 13.5px; color: var(--ink-soft); margin-top: 6px; line-height: 1.5; }
+  .danger { border: 1px solid rgba(255,120,120,0.4); }
+  .pill { font-size: 11px; font-weight: 800; padding: 3px 10px; border-radius: 999px; }
+  .pill.yes { background: rgba(46,160,80,0.16); color: #2e7d43; }
+  .pill.maybe { background: rgba(224,161,46,0.18); color: #9c7415; }
+  .pill.no { background: rgba(120,85,55,0.12); color: var(--ink-faint); }
+</style>
+</head>
+<body>
+<div class="orbs"><div class="orb peach"></div><div class="orb rose"></div><div class="orb amber"></div></div>
+
+<main>
+  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px">
+    <h1>🎛 Host Console</h1>
+    <span class="tiny" id="refresh-note">auto-refreshing…</span>
+  </div>
+
+  <div class="grid stats" id="stats"></div>
+
+  <div class="glass panel">
+    <div class="master">
+      <div>
+        <h2 style="margin-bottom:4px">Matching</h2>
+        <p class="tiny" id="matching-note">Everyone's lobby wakes the moment you flip this.</p>
+      </div>
+      <label class="switch"><input type="checkbox" id="matching-switch"><span class="track"></span><span class="knob"></span></label>
+    </div>
+  </div>
+
+  <div class="glass panel">
+    <h2>Caps — live, applies instantly</h2>
+    <div class="grid caps">
+      <div class="field"><label>Profiles / day</label><input type="number" id="cap-profiles" min="1"></div>
+      <div class="field"><label>Openers / day</label><input type="number" id="cap-openers" min="1"></div>
+      <div class="field"><label>Msgs / chat / day</label><input type="number" id="cap-msgs" min="1"></div>
+      <div class="field"><label>Incoming convos / day</label><input type="number" id="cap-inbox" min="1"></div>
+      <div class="field"><label>24h expiry</label>
+        <select id="cap-expiry"><option value="0">Off (event mode)</option><option value="1">On</option></select>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-sm" id="save-caps" style="margin-top:14px">Save caps</button>
+  </div>
+
+  <div class="glass panel">
+    <h2>People in the room <span class="tiny">(host sees through the glass)</span></h2>
+    <div class="grid users" id="users"></div>
+  </div>
+
+  <div class="glass panel">
+    <h2>Feedback <span id="fb-summary" class="tiny"></span></h2>
+    <div id="fb-list"></div>
+  </div>
+
+  <div class="glass panel danger">
+    <h2>⚠️ Reset entire event</h2>
+    <p class="tiny" style="margin-bottom:12px">Wipes all users, photos, chats and feedback. Restores default caps. Cannot be undone.</p>
+    <button class="btn btn-sm" style="background:#c0392b; color:#fff" id="reset">Reset event</button>
+  </div>
+</main>
+
+<script src="/js/common.js"></script>
+<script>
+async function guard() {
+  try { await api('/api/admin/stats', { noRedirect: true }); }
+  catch { location.href = '/login.html'; }
+}
+
+async function loadStats() {
+  const s = await api('/api/admin/stats');
+  document.getElementById('stats').innerHTML = [
+    [s.registered, 'Registered'], [s.women, 'Women'], [s.men, 'Men'],
+    [s.conversations, 'Conversations'], [s.messages, 'Messages'], [s.feedbackCount, 'Feedback'],
+  ].map(([n, l]) => '<div class="glass stat"><div class="n">' + n + '</div><div class="l">' + l + '</div></div>').join('');
+
+  const sw = document.getElementById('matching-switch');
+  if (document.activeElement !== sw) sw.checked = s.config.matchingOpen;
+  document.getElementById('matching-note').textContent = s.config.matchingOpen
+    ? 'LIVE — the room is matching right now.' : "Paused — everyone's parked in the lobby.";
+
+  // don't clobber caps while the host is typing
+  const capMap = [['cap-profiles', s.config.profilesPerDay], ['cap-openers', s.config.openersPerDay],
+    ['cap-msgs', s.config.msgsPerChatPerDay], ['cap-inbox', s.config.inboxCapPerDay]];
+  for (const [id, v] of capMap) {
+    const el = document.getElementById(id);
+    if (document.activeElement !== el && !el.dataset.dirty) el.value = v;
+  }
+  const ex = document.getElementById('cap-expiry');
+  if (document.activeElement !== ex && !ex.dataset.dirty) ex.value = s.config.expiryEnabled ? '1' : '0';
+}
+
+['cap-profiles','cap-openers','cap-msgs','cap-inbox','cap-expiry'].forEach((id) => {
+  document.getElementById(id).addEventListener('input', (e) => { e.target.dataset.dirty = '1'; });
+});
+
+document.getElementById('matching-switch').addEventListener('change', async (e) => {
+  await api('/api/admin/config', { body: { matchingOpen: e.target.checked } });
+  toast(e.target.checked ? '🚀 Matching is LIVE — lobbies are waking up' : '⏸ Matching paused');
+  loadStats();
+});
+
+document.getElementById('save-caps').addEventListener('click', async () => {
+  await api('/api/admin/config', { body: {
+    profilesPerDay: document.getElementById('cap-profiles').value,
+    openersPerDay: document.getElementById('cap-openers').value,
+    msgsPerChatPerDay: document.getElementById('cap-msgs').value,
+    inboxCapPerDay: document.getElementById('cap-inbox').value,
+    expiryEnabled: document.getElementById('cap-expiry').value === '1',
+  } });
+  ['cap-profiles','cap-openers','cap-msgs','cap-inbox','cap-expiry'].forEach((id) => delete document.getElementById(id).dataset.dirty);
+  toast('Caps updated live ✅');
+});
+
+async function loadUsers() {
+  const { users } = await api('/api/admin/users');
+  document.getElementById('users').innerHTML = users.length ? users.map((u) =>
+    '<div class="glass user-card">' +
+      '<div class="photos">' + u.photos.map((p) => '<img src="' + photoUrl(p, 3) + '" loading="lazy" alt="">').join('') + '</div>' +
+      '<div class="nm">' + esc(u.firstName) + ', ' + u.age + ' ' + (u.gender === 'woman' ? '♀' : '♂') + '</div>' +
+      '<div class="meta">@' + esc(u.username) + ' · ' + esc(u.job) + '</div>' +
+      '<button data-id="' + u.id + '" data-name="' + esc(u.firstName) + '">Remove</button>' +
+    '</div>'
+  ).join('') : '<p class="tiny">No one has registered yet.</p>';
+
+  document.querySelectorAll('.user-card button').forEach((b) => b.addEventListener('click', async () => {
+    if (!confirm('Remove ' + b.dataset.name + ' and all their conversations?')) return;
+    await api('/api/admin/users/' + b.dataset.id, { method: 'DELETE' });
+    toast('Removed');
+    loadUsers(); loadStats();
+  }));
+}
+
+async function loadFeedback() {
+  const d = await api('/api/admin/feedback');
+  document.getElementById('fb-summary').textContent =
+    d.feedback.length ? '— avg ' + d.avgRating + '❤️ · would join: ' + d.breakdown.yes + ' yes / ' + d.breakdown.maybe + ' maybe / ' + d.breakdown.no + ' no' : '';
+  document.getElementById('fb-list').innerHTML = d.feedback.length ? d.feedback.map((f) =>
+    '<div class="glass fb-item">' +
+      '<div class="top"><span>' + esc(f.firstName) + ' <span class="tiny">@' + esc(f.username) + '</span></span>' +
+      '<span>' + '❤️'.repeat(f.rating) + ' <span class="pill ' + f.wouldJoin + '">' + f.wouldJoin.toUpperCase() + '</span></span></div>' +
+      (f.bestMoment ? '<div class="body">🌟 ' + esc(f.bestMoment) + '</div>' : '') +
+      (f.changeText ? '<div class="body">🔧 ' + esc(f.changeText) + '</div>' : '') +
+    '</div>'
+  ).join('') : '<p class="tiny">No feedback yet.</p>';
+}
+
+document.getElementById('reset').addEventListener('click', async () => {
+  if (!confirm('Reset the ENTIRE event? All users, chats, photos and feedback will be wiped.')) return;
+  if (!confirm('Absolutely sure? This cannot be undone.')) return;
+  await api('/api/admin/reset', { body: {} });
+  toast('Event reset — clean slate 🧼');
+  loadAll();
+});
+
+function loadAll() { loadStats(); loadUsers(); loadFeedback(); }
+guard().then(() => {
+  loadAll();
+  setInterval(loadStats, 4000);
+  setInterval(() => { loadUsers(); loadFeedback(); }, 8000);
+});
+</script>
+</body>
+</html>

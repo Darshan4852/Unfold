@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Log in · UNFOLD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@1,400..700&family=Manrope:wght@300..800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles/base.css">
+<style>
+  .wrap { width: min(420px, 100% - 32px); margin: 0 auto; padding: 12vh 0 40px; }
+  h1 { font-family: var(--font-serif); font-style: italic; font-weight: 500; font-size: 34px; letter-spacing: -0.01em; margin-bottom: 4px; }
+  .card { padding: 26px 22px; margin-top: 20px; }
+  .err { color: #c0392b; font-size: 14px; font-weight: 700; margin-top: 10px; min-height: 20px; }
+  .foot { text-align: center; margin-top: 18px; font-size: 14px; color: var(--ink-soft); }
+</style>
+</head>
+<body>
+<div class="orbs"><div class="orb peach"></div><div class="orb rose"></div><div class="orb amber"></div></div>
+
+<div class="wrap">
+  <a href="/" style="text-decoration:none; font-weight:800; font-size:14px; color:var(--ink-soft)">← UNFOLD</a>
+  <h1 style="margin-top:14px">Welcome back.</h1>
+  <p class="muted">Pick up where the glass left off.</p>
+
+  <form class="glass card" id="form">
+    <div class="field"><label>Username</label><input name="username" required autocomplete="username"></div>
+    <div class="field"><label>Password</label><input name="password" type="password" required autocomplete="current-password"></div>
+    <div class="err" id="err"></div>
+    <button class="btn btn-primary" type="submit" style="width:100%">Log in →</button>
+  </form>
+
+  <div class="foot">New here? <a href="/register.html"><strong>Create your profile</strong></a></div>
+</div>
+
+<script src="/js/common.js"></script>
+<script>
+document.getElementById('form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const f = new FormData(e.target);
+  const err = document.getElementById('err');
+  err.textContent = '';
+  try {
+    const r = await api('/api/login', { body: { username: f.get('username'), password: f.get('password') }, noRedirect: true });
+    setSessionToken(r.token);
+    location.href = r.admin ? '/admin.html' : '/lobby.html';
+  } catch (ex) {
+    err.textContent = ex.message;
+  }
+});
+</script>
+</body>
+</html>

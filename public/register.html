@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f6efe4">
+<title>Join UNFOLD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@1,400..700&family=Manrope:wght@300..800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles/base.css">
+<style>
+  .wrap { width: min(560px, 100% - 32px); margin: 0 auto; padding: 28px 0 60px; }
+  h1 { font-family: var(--font-serif); font-style: italic; font-weight: 500; font-size: 32px; letter-spacing: -0.01em; line-height: 1.2; }
+  h1 em { color: var(--rose); }
+  .card { padding: 24px 20px; margin-top: 18px; }
+  .notice {
+    display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: var(--ink-soft);
+    background: rgba(224, 161, 46, 0.12); border: 1px solid rgba(224, 161, 46, 0.4);
+    border-radius: 14px; padding: 11px 14px; margin: 14px 0 20px;
+  }
+  .notice strong { color: #9c7415; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .gender-pick { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .gender-pick input { display: none; }
+  .gender-pick span {
+    display: block; text-align: center; padding: 13px; border-radius: 14px; font-weight: 700;
+    border: 1px solid var(--line); background: rgba(255,255,255,0.6); cursor: pointer;
+    transition: all 0.2s ease; color: var(--ink-soft);
+  }
+  .gender-pick input:checked + span {
+    background: var(--grad); color: #fff; border-color: transparent; box-shadow: var(--glow-rose);
+  }
+  .section-label { font-size: 12px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--rose); margin: 28px 0 12px; }
+  .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .photo-slot {
+    aspect-ratio: 3 / 4; border-radius: 16px; border: 2px dashed rgba(120, 85, 55, 0.3);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+    color: var(--ink-faint); font-size: 13px; font-weight: 700; cursor: pointer;
+    position: relative; overflow: hidden; background: rgba(255,255,255,0.45); text-align: center; padding: 10px;
+  }
+  .photo-slot.checking { border-color: var(--amber); }
+  .photo-slot.bad { border-color: var(--rose); border-style: solid; }
+  .photo-slot.good { border-style: solid; border-color: rgba(120,85,55,0.15); }
+  .photo-slot img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .photo-slot .veil { position: absolute; display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(4, 1fr); }
+  .photo-slot .veil i {
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    background: rgba(255, 255, 255, 0.3); border: 0.5px solid rgba(255, 255, 255, 0.55);
+  }
+  .photo-slot .hint { position: absolute; bottom: 8px; left: 0; right: 0; text-align: center; font-size: 11px; color: #fff; font-weight: 700; text-shadow: 0 1px 6px rgba(0,0,0,0.6); z-index: 3; }
+  .photo-slot .msg-badge { position: relative; z-index: 4; }
+  .err { color: #c0392b; font-size: 14px; font-weight: 700; margin-top: 12px; min-height: 20px; }
+  .foot { text-align: center; margin-top: 18px; font-size: 14px; color: var(--ink-soft); }
+</style>
+</head>
+<body>
+<div class="orbs"><div class="orb peach"></div><div class="orb rose"></div><div class="orb amber"></div></div>
+
+<div class="wrap">
+  <a href="/" style="text-decoration:none; font-weight:800; font-size:14px; color:var(--ink-soft)">← UNFOLD</a>
+  <h1 style="margin-top:14px">Show up as a <em>person</em>,<br>not a picture.</h1>
+
+  <form class="glass card" id="form" autocomplete="off">
+    <div class="notice">⚠️ <span><strong>Demo event</strong> — this account lives only for tonight. Use a <strong>throwaway password</strong>, not a real one.</span></div>
+
+    <div class="row2">
+      <div class="field"><label>Username</label><input name="username" required minlength="3" maxlength="30" placeholder="e.g. quietrebel"></div>
+      <div class="field"><label>Throwaway password</label><input name="password" type="password" required minlength="4" placeholder="min 4 chars"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>First name</label><input name="firstName" required maxlength="40" placeholder="Aisha"></div>
+      <div class="field"><label>Age</label><input name="age" type="number" required min="18" max="99" placeholder="24"></div>
+    </div>
+    <div class="field"><label>I am a</label>
+      <div class="gender-pick">
+        <label><input type="radio" name="gender" value="woman" required><span>Woman</span></label>
+        <label><input type="radio" name="gender" value="man"><span>Man</span></label>
+      </div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Height</label><input name="height" required maxlength="20" placeholder="5&#39;7&quot;"></div>
+      <div class="field"><label>Job</label><input name="job" required maxlength="60" placeholder="Product designer"></div>
+    </div>
+    <div class="field"><label>Education</label><input name="education" required maxlength="60" placeholder="BITS Pilani"></div>
+
+    <div class="field"><label>About you</label><textarea name="about" maxlength="400" placeholder="A few honest lines — this is the first thing people read while your face is still glass."></textarea></div>
+
+    <div class="section-label">Your story — pick three prompts</div>
+    <p class="tiny" style="margin:-6px 0 12px">These carry the conversation while your face is still glass. Pick the ones that sound like <em>you</em>.</p>
+    <div class="prompt-group" data-i="0">
+      <div class="field"><label>Prompt 1</label><select class="prompt-q"></select></div>
+      <div class="field"><textarea class="prompt-a" required maxlength="240" placeholder="your answer…"></textarea></div>
+    </div>
+    <div class="prompt-group" data-i="1">
+      <div class="field"><label>Prompt 2</label><select class="prompt-q"></select></div>
+      <div class="field"><textarea class="prompt-a" required maxlength="240" placeholder="your answer…"></textarea></div>
+    </div>
+    <div class="prompt-group" data-i="2">
+      <div class="field"><label>Prompt 3</label><select class="prompt-q"></select></div>
+      <div class="field"><textarea class="prompt-a" required maxlength="240" placeholder="your answer…"></textarea></div>
+    </div>
+
+    <div class="section-label">Two photos — with a real face</div>
+    <p class="tiny" style="margin:-6px 0 12px">We detect your face and glass <em>only that</em>. No face, no entry — the mechanic depends on it. Even you see them frosted; the face is <em>earned</em>. You can add up to <strong>4 more</strong> later from your profile — those unlock only for a mutual match.</p>
+    <div class="photo-grid">
+      <div class="photo-slot" id="slot0"><span style="font-size:22px">＋</span><span>Photo 1</span></div>
+      <div class="photo-slot" id="slot1"><span style="font-size:22px">＋</span><span>Photo 2</span></div>
+    </div>
+    <input type="file" id="file0" accept="image/*" hidden>
+    <input type="file" id="file1" accept="image/*" hidden>
+
+    <div class="err" id="err"></div>
+    <button class="btn btn-primary" type="submit" id="submit" style="width:100%; margin-top:6px">Enter the room →</button>
+  </form>
+
+  <div class="foot">Already registered? <a href="/login.html"><strong>Log in</strong></a></div>
+</div>
+
+<script src="/vendor/face-api.min.js"></script>
+<script src="/js/facecheck.js"></script>
+<script src="/js/common.js"></script>
+<script>
+const photos = [null, null];
+loadFaceModels(); // warm up detector in the background
+
+// Keep in sync with PROMPT_POOL in server.js.
+const PROMPT_POOL = [
+  'Top 3 movies or songs',
+  'My simple pleasure',
+  "We'll get along if",
+  'The hill I will die on',
+  'A weirdly specific thing that makes me happy',
+  "What I'm secretly competitive about",
+  "The most spontaneous thing I've ever done",
+  'A belief I changed my mind about',
+  'My most controversial food opinion',
+  'What my friends roast me for',
+  'A free Tuesday and zero guilt — I would',
+  'The question I wish people asked me',
+];
+document.querySelectorAll('.prompt-group').forEach((g, i) => {
+  const sel = g.querySelector('.prompt-q');
+  sel.innerHTML = PROMPT_POOL.map((q) => '<option>' + q.replace(/</g, '&lt;') + '</option>').join('');
+  sel.selectedIndex = [0, 4, 11][i]; // three different, curious defaults
+});
+function collectPrompts() {
+  return [...document.querySelectorAll('.prompt-group')].map((g) => ({
+    q: g.querySelector('.prompt-q').value,
+    a: g.querySelector('.prompt-a').value,
+  }));
+}
+
+async function compress(file) {
+  const url = URL.createObjectURL(file);
+  const img = await new Promise((ok, bad) => { const i = new Image(); i.onload = () => ok(i); i.onerror = bad; i.src = url; });
+  const MAX = 500;
+  const scale = Math.min(1, MAX / Math.max(img.naturalWidth, img.naturalHeight));
+  const c = document.createElement('canvas');
+  c.width = Math.round(img.naturalWidth * scale);
+  c.height = Math.round(img.naturalHeight * scale);
+  c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+  URL.revokeObjectURL(url);
+  return c.toDataURL('image/jpeg', 0.82);
+}
+
+function loadImg(src) { return new Promise((ok, bad) => { const i = new Image(); i.onload = () => ok(i); i.onerror = bad; i.src = src; }); }
+
+function slotChecking(slot) {
+  slot.className = 'photo-slot checking';
+  slot.innerHTML = '<span class="msg-badge" style="font-size:22px">🔍</span><span class="msg-badge">Looking for a face…</span>';
+}
+function slotBad(slot, reason) {
+  slot.className = 'photo-slot bad';
+  slot.innerHTML = '<span class="msg-badge" style="font-size:22px">🙈</span><span class="msg-badge" style="color:#c0392b">' + reason + '</span><span class="msg-badge tiny">tap to try another</span>';
+}
+function slotGood(slot, dataUrl, faceBox, unverified) {
+  slot.className = 'photo-slot good';
+  const veilStyle = 'left:' + (faceBox.x * 100) + '%;top:' + (faceBox.y * 100) + '%;width:' + (faceBox.w * 100) + '%;height:' + (faceBox.h * 100) + '%';
+  slot.innerHTML = '<img src="' + dataUrl + '" alt="">' +
+    '<div class="veil" style="' + veilStyle + '">' + '<i></i>'.repeat(16) + '</div>' +
+    '<div class="hint">' + (unverified ? 'photo added ✨' : 'face found · behind glass ✨') + '</div>';
+}
+
+[0, 1].forEach((i) => {
+  const slot = document.getElementById('slot' + i);
+  const input = document.getElementById('file' + i);
+  slot.addEventListener('click', () => input.click());
+  input.addEventListener('change', async () => {
+    if (!input.files[0]) return;
+    document.getElementById('err').textContent = '';
+    photos[i] = null;
+    slotChecking(slot);
+    let dataUrl;
+    try { dataUrl = await compress(input.files[0]); }
+    catch { slotBad(slot, 'Could not read that image'); return; }
+    let result;
+    try {
+      const img = await loadImg(dataUrl);
+      result = await detectFace(img);
+    } catch (e) { console.warn(e); result = { ok: true, unverified: true, faceBox: { x: 0.22, y: 0.10, w: 0.56, h: 0.50 } }; }
+
+    if (!result.ok) { slotBad(slot, result.reason); return; }
+    photos[i] = { dataUrl, faceBox: result.faceBox };
+    slotGood(slot, dataUrl, result.faceBox, result.unverified);
+  });
+});
+
+document.getElementById('form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const err = document.getElementById('err');
+  err.textContent = '';
+  if (!photos[0] || !photos[1]) { err.textContent = 'Please add both photos — each needs a clear, real face.'; return; }
+  const chosen = collectPrompts();
+  if (new Set(chosen.map((p) => p.q)).size !== 3) { err.textContent = 'Pick three different prompts.'; return; }
+  const f = new FormData(e.target);
+  const btn = document.getElementById('submit');
+  btn.disabled = true; btn.textContent = 'Setting the glass…';
+  try {
+    const r = await api('/api/register', { body: {
+      username: f.get('username'), password: f.get('password'),
+      firstName: f.get('firstName'), age: f.get('age'), gender: f.get('gender'),
+      height: f.get('height'), job: f.get('job'), education: f.get('education'),
+      about: f.get('about'),
+      prompts: collectPrompts(),
+      photos,
+    }, noRedirect: true });
+    setSessionToken(r.token);
+    location.href = '/lobby.html';
+  } catch (ex) {
+    err.textContent = ex.message;
+    btn.disabled = false; btn.textContent = 'Enter the room →';
+  }
+});
+</script>
+</body>
+</html>
