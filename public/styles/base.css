@@ -1,21 +1,21 @@
 /* ============ UNFOLD design system — warm light, editorial ============ */
 :root {
-  --cream: #f6efe4;
-  --cream-deep: #efe5d6;
-  --ink: #241a13;
-  --ink-soft: #6d5c4c;
-  --ink-faint: #a1917f;
+  --cream: #fafaf8;
+  --cream-deep: #f1f0ec;
+  --ink: #1d1b18;
+  --ink-soft: #6e6a62;
+  --ink-faint: #a9a49b;
   --rose: #e5455f;
   --peach: #f2894a;
-  --amber: #e0a12e;
+  --amber: #d99a26;
   --grad: linear-gradient(120deg, #e5455f, #f2894a);
-  --glass: rgba(255, 255, 255, 0.62);
-  --glass-strong: rgba(255, 255, 255, 0.82);
-  --glass-border: rgba(255, 255, 255, 0.85);
-  --line: rgba(120, 85, 55, 0.14);
-  --radius: 22px;
-  --shadow: 0 20px 50px -22px rgba(120, 70, 40, 0.32);
-  --glow-rose: 0 12px 34px -10px rgba(229, 69, 95, 0.5);
+  --glass: rgba(255, 255, 255, 0.85);
+  --glass-strong: rgba(255, 255, 255, 0.95);
+  --glass-border: rgba(0, 0, 0, 0.07);
+  --line: rgba(0, 0, 0, 0.08);
+  --radius: 20px;
+  --shadow: 0 10px 30px -14px rgba(20, 16, 10, 0.14);
+  --glow-rose: 0 10px 26px -10px rgba(229, 69, 95, 0.42);
   --font-ui: 'Manrope', system-ui, -apple-system, sans-serif;
   --font-serif: 'Fraunces', Georgia, serif;
 }
@@ -39,7 +39,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 /* ---- floating gradient orbs ---- */
 .orbs { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
 .orb {
-  position: absolute; border-radius: 50%; filter: blur(72px); opacity: 0.5;
+  position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.22;
   animation: orb-drift 26s ease-in-out infinite alternate;
 }
 .orb.peach { background: #f6b98a; width: 46vmax; height: 46vmax; top: -20vmax; left: -14vmax; }

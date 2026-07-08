@@ -14,7 +14,7 @@
   header.top {
     position: sticky; top: 0; z-index: 50; display: flex; align-items: center; justify-content: space-between;
     padding: 14px 18px; backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
-    background: rgba(246, 239, 228, 0.78); border-bottom: 1px solid var(--line);
+    background: rgba(255, 255, 255, 0.88); border-bottom: 1px solid var(--line);
   }
   .logo { font-weight: 800; letter-spacing: 0.16em; font-size: 15px;
     background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
@@ -39,45 +39,39 @@
   .tab-panel.active { display: block; animation: fade-up 0.4s ease; }
   @keyframes fade-up { from { opacity: 0; transform: translateY(10px); } }
 
-  /* ---- discover: full-bleed immersive ---- */
+  /* ---- discover: clean contained profile ---- */
   #panel-discover.active { animation: fade-up 0.5s ease; }
-  #panel-discover { padding-bottom: 74px; }
-  .hero-full { position: relative; width: 100vw; left: 50%; transform: translateX(-50%); margin-top: -14px; }
-  .hero-full .photo-frame { height: 78vh; min-height: 440px; border-radius: 0 0 32px 32px; }
+  #panel-discover { padding-bottom: 78px; }
+  .photo-card { position: relative; border-radius: 20px; overflow: hidden; box-shadow: var(--shadow); border: 1px solid var(--line); }
+  .photo-card .photo-frame { aspect-ratio: 3 / 3.55; border-radius: 20px; }
   .hero-pill {
-    position: absolute; z-index: 6; font-size: 10.5px; font-weight: 800; letter-spacing: 0.1em; color: #fff;
-    background: rgba(20,12,8,0.38); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255,255,255,0.22); padding: 8px 14px; border-radius: 999px;
+    position: absolute; z-index: 6; font-size: 10px; font-weight: 800; letter-spacing: 0.1em; color: #fff;
+    background: rgba(20, 16, 10, 0.4); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.22); padding: 7px 12px; border-radius: 999px;
   }
-  .hero-pill.tl { top: 16px; left: 16px; }
-  .hero-pill.tr { top: 16px; right: 16px; }
+  .hero-pill.tl { top: 12px; left: 12px; }
+  .hero-pill.tr { top: 12px; right: 12px; }
   .hero-pill .accent { color: var(--peach); }
-  .hero-scrim {
-    position: absolute; left: 0; right: 0; bottom: 0; z-index: 5; pointer-events: none;
-    padding: 130px 24px 30px;
-    background: linear-gradient(180deg, transparent, rgba(18, 10, 6, 0.12) 32%, rgba(18, 10, 6, 0.82));
-    border-radius: 0 0 32px 32px;
-  }
-  .hero-scrim h2 { font-family: var(--font-serif); font-style: italic; font-weight: 500; font-size: 46px; letter-spacing: -0.01em; line-height: 1; color: #fff; text-shadow: 0 2px 30px rgba(0,0,0,0.45); }
-  .hero-scrim h2 span { font-family: var(--font-ui); font-style: normal; font-weight: 300; font-size: 30px; color: rgba(255,255,255,0.85); margin-left: 8px; }
-  .hero-status-line { display: inline-flex; align-items: center; gap: 7px; margin-top: 14px; max-width: 100%;
-    background: rgba(255,255,255,0.16); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.24);
-    padding: 7px 14px; border-radius: 999px; font-family: var(--font-serif); font-style: italic; font-size: 14px; color: #fff; }
-  .hero-status-line span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .hero-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 14px; }
-  .chip { font-size: 12px; font-weight: 700; color: #fff; background: rgba(255,255,255,0.18); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.28); padding: 6px 12px; border-radius: 999px; }
-  .scroll-cue { position: absolute; left: 50%; transform: translateX(-50%); bottom: 8px; z-index: 6; color: rgba(255,255,255,0.75); font-size: 20px; animation: cue 1.8s ease-in-out infinite; pointer-events: none; }
-  @keyframes cue { 0%,100% { transform: translate(-50%, 0); opacity: 0.5; } 50% { transform: translate(-50%, 5px); opacity: 1; } }
-  .below-hero { margin-top: 18px; }
 
-  .prompt { background: var(--glass); backdrop-filter: blur(14px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 20px 22px; margin-top: 14px; box-shadow: var(--shadow); }
-  .prompt .q { font-size: 10.5px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--rose); margin-bottom: 8px; }
-  .prompt .a { font-family: var(--font-serif); font-style: italic; font-size: 22px; line-height: 1.4; color: var(--ink); }
-  .about-block { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 20px; padding: 20px 22px; margin-top: 14px; box-shadow: var(--shadow); }
-  .about-block .q { font-size: 10.5px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--amber); margin-bottom: 8px; }
-  .about-block p { font-size: 16px; line-height: 1.6; color: var(--ink); }
-  .second-shot { border-radius: 22px; overflow: hidden; margin-top: 14px; box-shadow: var(--shadow); }
-  .second-shot .photo-frame { aspect-ratio: 4 / 3.4; border-radius: 22px; }
+  .profile-head { padding: 16px 4px 2px; }
+  .profile-head h2 { font-size: 22px; font-weight: 800; letter-spacing: -0.01em; }
+  .profile-head h2 span { font-weight: 400; color: var(--ink-soft); margin-left: 6px; }
+  .detail-line { font-size: 13.5px; color: var(--ink-soft); font-weight: 600; margin-top: 4px; }
+  .hero-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+  .chip { font-size: 12px; font-weight: 700; color: var(--ink); background: #fff; border: 1px solid var(--line); padding: 6px 12px; border-radius: 999px; }
+  .hero-status-line { display: inline-flex; align-items: center; gap: 7px; margin-top: 10px; max-width: 100%;
+    background: var(--cream-deep); border: 1px solid var(--line);
+    padding: 6px 13px; border-radius: 999px; font-family: var(--font-serif); font-style: italic; font-size: 13.5px; color: var(--ink); }
+  .hero-status-line span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .prompt { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 16px 18px; margin-top: 12px; box-shadow: var(--shadow); }
+  .prompt .q { font-size: 10px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--rose); margin-bottom: 6px; }
+  .prompt .a { font-family: var(--font-serif); font-style: italic; font-size: 17px; line-height: 1.45; color: var(--ink); }
+  .about-block { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 16px 18px; margin-top: 14px; box-shadow: var(--shadow); }
+  .about-block .q { font-size: 10px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--amber); margin-bottom: 6px; }
+  .about-block p { font-size: 14.5px; line-height: 1.6; color: var(--ink); }
+  .second-shot { border-radius: 16px; overflow: hidden; margin-top: 12px; box-shadow: var(--shadow); border: 1px solid var(--line); }
+  .second-shot .photo-frame { aspect-ratio: 4 / 3.4; border-radius: 16px; }
 
   /* floating action bar (sits above the tab nav) */
   .discover-actions {
@@ -274,19 +268,15 @@ function openProfilePreview(p) {
   wrap.innerHTML =
     '<div class="preview-top"><span class="tiny" style="font-weight:800; letter-spacing:0.14em">👁 THIS IS WHAT OTHERS SEE</span>' +
     '<button class="fp-close" id="preview-close">Close</button></div>' +
-    '<div class="hero-shot">' +
+    '<div class="photo-card">' +
       '<div id="pv-ph0"></div>' +
-      '<div class="glass-note">🧊 BEHIND GLASS</div>' +
-      '<div class="hero-scrim">' +
-        '<h2>' + esc(p.firstName) + '<span>' + p.age + '</span></h2>' +
-        '<div class="hero-chips">' +
-          '<span class="chip">📏 ' + esc(p.height) + '</span>' +
-          '<span class="chip">💼 ' + esc(p.job) + '</span>' +
-          '<span class="chip">🎓 ' + esc(p.education) + '</span>' +
-        '</div>' +
-      '</div>' +
+      '<div class="hero-pill tr">🧊 BEHIND GLASS</div>' +
     '</div>' +
-    (p.status ? '<div class="status-card"><span class="s-tag">' + esc(p.status.label) + ' · today</span><p>“' + esc(p.status.text) + '”</p></div>' : '') +
+    '<div class="profile-head">' +
+      '<h2>' + esc(p.firstName) + '<span>' + p.age + '</span></h2>' +
+      '<p class="detail-line">💼 ' + esc(p.job) + ' · 🎓 ' + esc(p.education) + ' · 📏 ' + esc(p.height) + '</p>' +
+      (p.status ? '<div class="hero-status-line">' + statusEmoji(p.status.type) + ' <span>' + esc(p.status.text) + '</span></div>' : '') +
+    '</div>' +
     (p.about ? '<div class="about-block"><div class="q">About ' + esc(p.firstName) + '</div><p>' + esc(p.about) + '</p></div>' : '') +
     '<div class="prompt"><div class="q">' + esc(p.prompts[0].q) + '</div><div class="a">' + esc(p.prompts[0].a) + '</div></div>' +
     '<div class="second-shot"><div id="pv-ph1"></div></div>' +
@@ -326,28 +316,21 @@ async function loadDiscover() {
   currentProfile = d.profile;
   const p = d.profile;
   panel.innerHTML =
-    '<div class="hero-full">' +
+    '<div class="photo-card">' +
       '<div id="ph0"></div>' +
       '<div class="hero-pill tl">PROFILE <span class="accent">' + d.position + '</span> / ' + d.counters.profilesPerDay + '</div>' +
       '<div class="hero-pill tr">🧊 BEHIND GLASS</div>' +
-      '<div class="hero-scrim">' +
-        '<h2>' + esc(p.firstName) + '<span>' + p.age + '</span></h2>' +
-        (p.status ? '<div class="hero-status-line">' + statusEmoji(p.status.type) + ' <span>' + esc(p.status.text) + '</span></div>' : '') +
-        '<div class="hero-chips">' +
-          '<span class="chip">📏 ' + esc(p.height) + '</span>' +
-          '<span class="chip">💼 ' + esc(p.job) + '</span>' +
-          '<span class="chip">🎓 ' + esc(p.education) + '</span>' +
-        '</div>' +
-      '</div>' +
-      '<div class="scroll-cue">⌄</div>' +
     '</div>' +
-    '<div class="below-hero">' +
-      (p.about ? '<div class="about-block"><div class="q">About ' + esc(p.firstName) + '</div><p>' + esc(p.about) + '</p></div>' : '') +
-      '<div class="prompt"><div class="q">' + esc(p.prompts[0].q) + '</div><div class="a">' + esc(p.prompts[0].a) + '</div></div>' +
-      '<div class="second-shot"><div id="ph1"></div></div>' +
-      '<div class="prompt"><div class="q">' + esc(p.prompts[1].q) + '</div><div class="a">' + esc(p.prompts[1].a) + '</div></div>' +
-      '<div class="prompt"><div class="q">' + esc(p.prompts[2].q) + '</div><div class="a">' + esc(p.prompts[2].a) + '</div></div>' +
+    '<div class="profile-head">' +
+      '<h2>' + esc(p.firstName) + '<span>' + p.age + '</span></h2>' +
+      '<p class="detail-line">💼 ' + esc(p.job) + ' · 🎓 ' + esc(p.education) + ' · 📏 ' + esc(p.height) + '</p>' +
+      (p.status ? '<div class="hero-status-line">' + statusEmoji(p.status.type) + ' <span>' + esc(p.status.text) + '</span></div>' : '') +
     '</div>' +
+    (p.about ? '<div class="about-block"><div class="q">About ' + esc(p.firstName) + '</div><p>' + esc(p.about) + '</p></div>' : '') +
+    '<div class="prompt"><div class="q">' + esc(p.prompts[0].q) + '</div><div class="a">' + esc(p.prompts[0].a) + '</div></div>' +
+    '<div class="second-shot"><div id="ph1"></div></div>' +
+    '<div class="prompt"><div class="q">' + esc(p.prompts[1].q) + '</div><div class="a">' + esc(p.prompts[1].a) + '</div></div>' +
+    '<div class="prompt"><div class="q">' + esc(p.prompts[2].q) + '</div><div class="a">' + esc(p.prompts[2].a) + '</div></div>' +
     '<div class="discover-actions">' +
       '<button class="skip-btn" id="skip" title="Skip — never shown again">✕</button>' +
       '<button class="btn btn-primary start-btn" id="start">Start a conversation</button>' +
