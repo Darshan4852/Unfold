@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: unfold
+    runtime: docker
+    plan: free
+    region: singapore
+    healthCheckPath: /
+    envVars:
+      - key: ADMIN_PASSWORD
+        sync: false

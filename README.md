@@ -16,7 +16,23 @@ No build step. Requires Node ≥ 22 (uses the built-in `node:sqlite`). All depen
 |---|---|---|
 | `ADMIN_PASSWORD` | `unfold-admin` (dev only — always set it for the event) | admin login password |
 | `PORT` | `3000` | HTTP port |
-| `DATABASE_URL` | `data/unfold.db` | SQLite file path |
+| `DATABASE_URL` | `data/unfold.db` | SQLite file path — point at a mounted volume for persistence |
+| `UPLOAD_DIR` | `uploads/` | photo/voice storage — point at a mounted volume for persistence |
+
+## Deploy
+
+This is a stateful app (SQLite + uploaded photos/voice on disk), so it needs a host that keeps
+a Node process running with real storage — not a static/serverless host.
+
+**Render.com (current setup, `render.yaml` + `Dockerfile` in this repo):**
+1. In Render: New → Blueprint → connect this GitHub repo → it reads `render.yaml` → fill in `ADMIN_PASSWORD` → Apply.
+2. Free tier has **ephemeral disk** — the server sleeps after 15 min idle and wipes all data (users/photos)
+   on wake or redeploy. Fine for a quick look; for a live event, upgrade the service to a paid plan with a
+   persistent **Disk** mounted, then set `DATABASE_URL=/var/data/db/unfold.db` and `UPLOAD_DIR=/var/data/uploads`
+   (or wherever the disk is mounted) as env vars so data survives restarts.
+
+Any other Docker-friendly host with persistent volumes (Fly.io, Railway, a VPS) works the same way — build the
+included `Dockerfile`, mount a volume, and point `DATABASE_URL` / `UPLOAD_DIR` at it.
 
 ## Event runbook
 
