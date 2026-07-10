@@ -27,7 +27,7 @@ body {
   background: var(--cream);
   color: var(--ink);
   min-height: 100dvh;
-  overflow-x: hidden;
+  overflow-x: clip; /* like hidden, but doesn't create a scroll container (keeps position:sticky working) */
   -webkit-font-smoothing: antialiased;
 }
 em, .serif { font-family: var(--font-serif); font-style: italic; font-weight: 500; }

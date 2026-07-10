@@ -28,33 +28,77 @@
   .nav .brand { font-weight: 800; letter-spacing: 0.2em; font-size: 15px; text-decoration: none; }
   .nav .cta { font-size: 13px; padding: 10px 20px; }
 
-  /* ---------- hero ---------- */
-  .hero { min-height: 100dvh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 120px 20px 60px; }
-  .hero-word { font-size: clamp(58px, 15vw, 150px); font-weight: 800; letter-spacing: 0.06em; line-height: 1; display: flex; }
-  .hero-word span { display: inline-block; filter: blur(20px); opacity: 0; animation: letter-in 1.3s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+  /* ---------- ACT 1: scroll-reveal hero ---------- */
   @keyframes letter-in { to { filter: blur(0); opacity: 1; } }
-  .hero .tag { margin-top: 22px; font-size: clamp(17px, 3vw, 24px); color: var(--ink-soft); opacity: 0; animation: fade-in 1.2s ease 1.3s forwards; }
-  .hero .tag em { color: var(--rose); }
   @keyframes fade-in { to { opacity: 1; } }
-  .hero .ctas { display: flex; gap: 14px; margin-top: 40px; flex-wrap: wrap; justify-content: center; opacity: 0; animation: fade-in 1s ease 1.8s forwards; }
-  .scroll-hint { position: absolute; bottom: 26px; left: 50%; transform: translateX(-50%); font-size: 11px; letter-spacing: 0.24em; color: var(--ink-faint); font-weight: 800; opacity: 0; animation: fade-in 1s ease 2.4s forwards; }
-  .scroll-hint::after { content: ''; display: block; width: 1px; height: 34px; background: linear-gradient(var(--ink-faint), transparent); margin: 10px auto 0; animation: drip 1.8s ease-in-out infinite; }
+  .act1, .act2 { padding: 0; }
+  .act1 { height: 340vh; position: relative; }
+  .act1-sticky { position: sticky; top: 0; height: 100svh; overflow: hidden; background: #17130f; }
+  .act1-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 20%;
+    filter: grayscale(1) contrast(1.02); transform: scale(1.12); will-change: transform, filter; }
+  .act1-shade { position: absolute; inset: 0; z-index: 3; pointer-events: none;
+    background: linear-gradient(180deg, rgba(15, 11, 8, 0.35), transparent 30%, transparent 55%, rgba(15, 11, 8, 0.62)); }
+  .act1-tiles { position: absolute; inset: 0; z-index: 2; }
+  .a1-tile { position: absolute; backdrop-filter: blur(22px) brightness(1.06); -webkit-backdrop-filter: blur(22px) brightness(1.06);
+    background: linear-gradient(135deg, rgba(255,255,255,0.26), rgba(255,255,255,0.1));
+    border: 0.5px solid rgba(255,255,255,0.28);
+    transition: opacity 0.6s ease, transform 0.6s ease; will-change: opacity, transform; }
+  .a1-tile.off { opacity: 0; transform: scale(1.12); pointer-events: none; }
+  .act1-copy { position: absolute; inset: 0; z-index: 5; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 18px; pointer-events: none; }
+  .a1-word { font-size: clamp(58px, 15vw, 170px); font-weight: 800; letter-spacing: 0.06em; line-height: 1; display: flex; color: #fff;
+    text-shadow: 0 6px 40px rgba(0, 0, 0, 0.55); }
+  .a1-word span { display: inline-block; filter: blur(20px); opacity: 0; }
+  .a1-word.on span { animation: letter-in 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+  .a1-tag { margin-top: 20px; font-size: clamp(17px, 3vw, 26px); color: rgba(255,255,255,0.95); font-weight: 600;
+    text-shadow: 0 3px 24px rgba(0,0,0,0.6); opacity: 0; transform: translateY(16px); transition: opacity 0.9s ease, transform 0.9s ease; }
+  .a1-tag em { color: var(--peach); }
+  .a1-tag.on { opacity: 1; transform: none; }
+  .a1-cta { display: flex; gap: 14px; margin-top: 38px; flex-wrap: wrap; justify-content: center; opacity: 0; transform: translateY(16px);
+    transition: opacity 0.9s ease, transform 0.9s ease; pointer-events: none; }
+  .a1-cta.on { opacity: 1; transform: none; pointer-events: auto; }
+  .scroll-hint { position: absolute; bottom: 26px; left: 50%; transform: translateX(-50%); z-index: 6; font-size: 11px; letter-spacing: 0.24em;
+    color: rgba(255,255,255,0.85); font-weight: 800; text-shadow: 0 2px 14px rgba(0,0,0,0.6); transition: opacity 0.5s ease; }
+  .scroll-hint::after { content: ''; display: block; width: 1px; height: 34px; background: linear-gradient(rgba(255,255,255,0.8), transparent); margin: 10px auto 0; animation: drip 1.8s ease-in-out infinite; }
+  .scroll-hint.off { opacity: 0; }
   @keyframes drip { 0%, 100% { transform: scaleY(0.4); transform-origin: top; } 50% { transform: scaleY(1); } }
 
-  /* ---------- problem ---------- */
+  /* ---------- ACT 2: scroll-driven swiping ---------- */
+  .act2 { height: 320vh; position: relative; }
+  .act2-sticky { position: sticky; top: 0; height: 100svh; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .a2-copy { text-align: center; margin-bottom: 26px; }
+  .a2-sub { font-size: 13px; color: var(--ink-faint); font-weight: 700; margin-top: 10px; letter-spacing: 0.04em; }
+  .a2-stage { position: relative; width: min(270px, 72vw); aspect-ratio: 3 / 4.15; }
+  .a2-card { position: absolute; inset: 0; border-radius: 22px; overflow: hidden; background: #fff; border: 1px solid var(--line);
+    box-shadow: 0 26px 55px -24px rgba(30, 20, 10, 0.4); transition: transform 0.65s cubic-bezier(0.45, 0, 0.6, 1), opacity 0.55s ease; will-change: transform; }
+  .a2-ph { width: 100%; height: 80%; background-size: cover; background-position: center 22%; }
+  .a2-bar { padding: 11px 15px; }
+  .a2-bar b { font-size: 15px; color: var(--ink); }
+  .a2-bar small { display: block; color: var(--ink-faint); font-size: 12px; margin-top: 2px; }
+  .stamp { position: absolute; top: 18px; font-size: 26px; font-weight: 800; letter-spacing: 0.06em; padding: 4px 14px; border-radius: 8px;
+    border: 3.5px solid; opacity: 0; transform: rotate(-14deg) scale(1.3); transition: opacity 0.25s ease, transform 0.25s ease; }
+  .stamp.nope { right: 14px; color: #e5455f; border-color: #e5455f; transform: rotate(14deg) scale(1.3); }
+  .stamp.like { left: 14px; color: #3fae5c; border-color: #3fae5c; }
+  .a2-card.stamped .stamp { opacity: 1; transform: rotate(-12deg) scale(1); }
+  .a2-card.stamped .stamp.nope { transform: rotate(12deg) scale(1); }
+  .a2-card.fly-left { transform: translateX(-150%) rotate(-24deg); opacity: 0; }
+  .a2-card.fly-right { transform: translateX(150%) rotate(24deg); opacity: 0; }
+  .a2-verdict { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+    padding: 0 24px; opacity: 0; transform: translateY(20px); transition: opacity 0.8s ease, transform 0.8s ease; pointer-events: none; }
+  .a2-verdict.on { opacity: 1; transform: none; }
+  .a2-verdict h3 { font-size: clamp(24px, 4.6vw, 44px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; }
+  .a2-verdict h3 em { color: var(--rose); font-style: italic; font-family: var(--font-serif); font-weight: 500; }
+  .a2-verdict p { margin-top: 14px; color: var(--ink-soft); font-size: 15.5px; max-width: 420px; line-height: 1.65; }
+  .a2-sticky.done .a2-stage, .a2-sticky.done .a2-copy { opacity: 0.06; transition: opacity 0.7s ease; }
+  .a2-sticky .a2-stage, .a2-sticky .a2-copy { transition: opacity 0.7s ease; }
+
+  /* act 3 slide-ins */
+  .reveal.slide-l { transform: translate(-70px, 20px); }
+  .reveal.slide-r { transform: translate(70px, 20px); }
+  .reveal.in { transform: none; }
+
+  /* (kept for the 24h section layout) */
   .split { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(28px, 6vw, 80px); align-items: center; }
   @media (max-width: 760px) { .split { grid-template-columns: 1fr; } }
-  .stark { margin-top: 26px; }
-  .stark div { font-size: clamp(26px, 4.6vw, 42px); font-weight: 300; letter-spacing: -0.02em; line-height: 1.35; color: var(--ink-faint); }
-  .stark div strong { font-weight: 800; color: var(--ink); }
-  .swipe-stack { position: relative; height: 380px; max-width: 280px; margin: 0 auto; width: 100%; }
-  .swipe-card { position: absolute; inset: 0; border-radius: 24px; overflow: hidden; box-shadow: var(--shadow); transition: transform 0.55s cubic-bezier(0.5, 0, 0.75, 0), opacity 0.5s ease, filter 0.6s ease; background: #d8ccbb; }
-  .swipe-card .ph { width: 100%; height: 78%; background-size: cover; background-position: center 25%; filter: blur(9px) saturate(1.05) brightness(0.95); transform: scale(1.12); }
-  .swipe-card .bar { padding: 12px 16px; background: #fff; height: 22%; }
-  .swipe-card .bar b { font-size: 15px; color: #1c1216; }
-  .swipe-card .bar small { display: block; color: #999; font-size: 12px; margin-top: 2px; }
-  .swipe-card.flying { transform: translateX(130%) rotate(22deg); opacity: 0; }
-  .swipe-note { text-align: center; font-size: 13px; color: var(--ink-faint); margin-top: 14px; font-weight: 600; }
 
   /* ---------- flip / comparison ---------- */
   .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 44px; }
@@ -173,45 +217,53 @@
   </div>
 </nav>
 
-<!-- 1 · HERO -->
-<header class="hero">
-  <div class="hero-word" id="hero-word" aria-label="UNFOLD"></div>
-  <p class="tag">Discover <em>people</em> before pictures.</p>
-  <div class="ctas">
-    <a class="btn btn-primary" href="/register.html">Experience it live →</a>
-    <a class="btn btn-ghost" href="#demo">How it works</a>
-  </div>
-  <div class="scroll-hint">SCROLL</div>
-</header>
-
-<!-- 2 · PROBLEM -->
-<section id="problem">
-  <div class="container split">
-    <div>
-      <div class="kicker reveal">The problem</div>
-      <h2 class="title reveal d1">Dating became a game of first impressions.</h2>
-      <div class="stark">
-        <div class="reveal d1"><strong>One photo.</strong></div>
-        <div class="reveal d2"><strong>Half a second.</strong></div>
-        <div class="reveal d3"><strong>Gone forever.</strong></div>
+<!-- ACT 1 · SCROLL-REVEAL HERO — she starts behind the glass; your scroll earns her -->
+<section class="act1" id="act1">
+  <div class="act1-sticky">
+    <img class="act1-photo" id="act1-photo" src="/assets/demo-girl.jpg" alt="">
+    <div class="act1-shade"></div>
+    <div class="act1-tiles" id="act1-tiles"></div>
+    <div class="act1-copy">
+      <div class="a1-word" id="a1-word" aria-label="UNFOLD"></div>
+      <p class="a1-tag" id="a1-tag">Reveal the <em>person</em>. Not just the face.</p>
+      <div class="a1-cta" id="a1-cta">
+        <a class="btn btn-primary" href="/register.html">Experience it live →</a>
+        <a class="btn btn-ghost" href="#demo">How it works</a>
       </div>
-      <p class="lede reveal d3">Everything you are — your humour, your taste, your Tuesday-night thoughts — judged and discarded faster than a blink.</p>
     </div>
-    <div class="reveal d2">
-      <div class="swipe-stack" id="swipe-stack"></div>
-      <div class="swipe-note">this loop never ends. that's the point.</div>
+    <div class="scroll-hint" id="a1-hint">SCROLL TO REVEAL HER</div>
+  </div>
+</section>
+
+<!-- ACT 2 · SWIPE CULTURE — four verdicts, zero words -->
+<section class="act2" id="act2">
+  <div class="act2-sticky">
+    <div class="a2-copy">
+      <div class="kicker">Meanwhile, on every other app</div>
+      <h2 class="title">This is dating now.</h2>
+      <p class="a2-sub" id="a2-sub">keep scrolling — you're the thumb</p>
+    </div>
+    <div class="a2-stage" id="a2-stage">
+      <div class="a2-card" data-fly="left"><div class="a2-ph" style="background-image:url('/assets/swipe1.jpg')"></div><div class="a2-bar"><b>Sneha, 23</b><small>wanderlust ✈️</small></div><span class="stamp nope">NOPE</span></div>
+      <div class="a2-card" data-fly="right"><div class="a2-ph" style="background-image:url('/assets/c2.jpg')"></div><div class="a2-bar"><b>Naina, 24</b><small>art · rain · films</small></div><span class="stamp like">LIKE</span></div>
+      <div class="a2-card" data-fly="left"><div class="a2-ph" style="background-image:url('/assets/swipe3.jpg')"></div><div class="a2-bar"><b>Rahul, 26</b><small>foodie · gym · travel</small></div><span class="stamp nope">NOPE</span></div>
+      <div class="a2-card" data-fly="right"><div class="a2-ph" style="background-image:url('/assets/swipe2.jpg')"></div><div class="a2-bar"><b>Priya, 24</b><small>loves sunsets · 2km away</small></div><span class="stamp like">LIKE</span></div>
+    </div>
+    <div class="a2-verdict" id="a2-verdict">
+      <h3>Four humans. Four verdicts. <em>Zero words.</em></h3>
+      <p>Everything they are — judged faster than a blink. You just did it too.</p>
     </div>
   </div>
 </section>
 
-<!-- 3 · THE FLIP -->
+<!-- ACT 3 · THEM VS US -->
 <section id="flip">
   <div class="container">
     <div class="kicker reveal">The flip</div>
     <h2 class="title reveal d1">What if conversations came<br>before appearances?</h2>
     <div class="compare">
-      <div class="glass col-card old reveal d1 tilt">
-        <h3>Every other app</h3>
+      <div class="glass col-card old reveal slide-l d1 tilt">
+        <h3>The problem — every other app</h3>
         <ul>
           <li>📸 Photo → swipe</li>
           <li>🗂 Collect matches</li>
@@ -219,13 +271,13 @@
           <li>👻 Ghosting as a norm</li>
         </ul>
       </div>
-      <div class="glass col-card new reveal d2 tilt">
-        <h3>Unfold</h3>
+      <div class="glass col-card new reveal slide-r d2 tilt">
+        <h3>The solution — Unfold</h3>
         <ul>
-          <li>📖 Story → <em>read</em></li>
-          <li>💬 Start a conversation</li>
-          <li>🌱 High-intent scarcity</li>
-          <li>🤝 Genuine connection</li>
+          <li>🧊 The face starts hidden</li>
+          <li>💬 Words start the story</li>
+          <li>✨ Conversation clears the glass</li>
+          <li>🤝 Attraction that compounds</li>
         </ul>
       </div>
     </div>
@@ -376,10 +428,10 @@
 
 <script src="/js/common.js"></script>
 <script>
-// ---------- hero letters ----------
+// ---------- ACT 1 word (letters revealed by scroll) ----------
 const word = 'UNFOLD';
-document.getElementById('hero-word').innerHTML = word.split('').map((c, i) =>
-  `<span style="animation-delay:${0.15 + i * 0.14}s">${c}</span>`).join('');
+document.getElementById('a1-word').innerHTML = word.split('').map((c, i) =>
+  `<span style="animation-delay:${i * 0.12}s">${c}</span>`).join('');
 
 // ---------- scroll reveals ----------
 const io = new IntersectionObserver((entries) => {
@@ -413,39 +465,102 @@ if (!REDUCED_MOTION && matchMedia('(hover: hover)').matches) {
   });
 }
 
-// ---------- problem: swipe-away loop ----------
+// ================= SCROLL FILM: Act 1 (glass reveal) + Act 2 (swipes) =================
 (() => {
-  const stack = document.getElementById('swipe-stack');
-  const fake = [
-    ['Priya, 24', 'loves sunsets · 2km away', '/assets/swipe2.jpg'],
-    ['Rahul, 26', 'foodie · gym · travel', '/assets/swipe3.jpg'],
-    ['Sneha, 23', 'wanderlust ✈️', '/assets/swipe1.jpg'],
-    ['Aman, 27', 'dog dad · coffee snob', '/assets/seeds/m2.jpg'],
-  ];
-  fake.forEach(([nm, bio, img]) => {
-    const c = document.createElement('div');
-    c.className = 'swipe-card';
-    c.innerHTML = `<div class="ph" style="background-image:url('${img}')"></div><div class="bar"><b>${nm}</b><small>${bio}</small></div>`;
-    stack.appendChild(c);
-  });
-  const restyle = () => {
-    [...stack.children].forEach((c, i, all) => {
-      const d = all.length - 1 - i; // last child on top
-      c.style.zIndex = 10 - d;
-      if (!c.classList.contains('flying')) c.style.transform = `translateY(${d * -10}px) scale(${1 - d * 0.05})`;
-      c.style.filter = d ? 'brightness(0.96)' : '';
-    });
+  const act1 = document.getElementById('act1');
+  const act2 = document.getElementById('act2');
+  const photo = document.getElementById('act1-photo');
+  const tilesHolder = document.getElementById('act1-tiles');
+  const a1word = document.getElementById('a1-word');
+  const a1tag = document.getElementById('a1-tag');
+  const a1cta = document.getElementById('a1-cta');
+  const a1hint = document.getElementById('a1-hint');
+  const a2sticky = document.querySelector('.act2-sticky');
+  const a2verdict = document.getElementById('a2-verdict');
+
+  // build the full-screen puzzle grid (5 × 7)
+  const COLS = 5, ROWS = 7, N = COLS * ROWS;
+  const order = Array.from({ length: N }, (_, i) => i);
+  // deterministic shuffle so the reveal pattern feels designed, not random
+  let s = 42;
+  for (let i = N - 1; i > 0; i--) {
+    s = (s * 9301 + 49297) % 233280;
+    const j = s % (i + 1);
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  const rank = [];
+  order.forEach((tile, idx) => { rank[tile] = idx; });
+  const tiles = [];
+  for (let i = 0; i < N; i++) {
+    const t = document.createElement('div');
+    t.className = 'a1-tile';
+    const c = i % COLS, r = Math.floor(i / COLS);
+    t.style.left = (c * 100 / COLS) + '%';
+    t.style.top = (r * 100 / ROWS) + '%';
+    t.style.width = (100 / COLS + 0.05) + '%';
+    t.style.height = (100 / ROWS + 0.05) + '%';
+    // each tile clears at its own scroll depth, between 10% and 72%
+    t.dataset.at = (0.10 + (rank[i] / N) * 0.62).toFixed(4);
+    tilesHolder.appendChild(t);
+    tiles.push(t);
+  }
+
+  const clamp01 = (v) => Math.max(0, Math.min(1, v));
+  const prog = (el) => {
+    const r = el.getBoundingClientRect();
+    return clamp01(-r.top / (r.height - innerHeight));
   };
-  restyle();
-  if (!REDUCED_MOTION) setInterval(() => {
-    const top = stack.lastElementChild;
-    top.classList.add('flying');
-    setTimeout(() => {
-      top.classList.remove('flying');
-      stack.insertBefore(top, stack.firstChild);
-      restyle();
-    }, 600);
-  }, 2100);
+
+  // the four swipes fire at these depths of act 2
+  const cards = [...document.querySelectorAll('.a2-card')].reverse(); // top card first
+  const FLY_AT = [0.18, 0.36, 0.54, 0.72];
+
+  function update() {
+    // ----- act 1 -----
+    const p1 = prog(act1);
+    for (const t of tiles) {
+      t.classList.toggle('off', p1 > parseFloat(t.dataset.at));
+    }
+    // grayscale melts into colour as the last tiles fall; slow ken-burns settle
+    const colour = clamp01((p1 - 0.62) / 0.24);
+    photo.style.filter = `grayscale(${1 - colour}) contrast(1.02)`;
+    photo.style.transform = `scale(${1.12 - p1 * 0.12})`;
+    a1word.classList.toggle('on', p1 > 0.08);
+    a1tag.classList.toggle('on', p1 > 0.3);
+    a1cta.classList.toggle('on', p1 > 0.8);
+    a1hint.classList.toggle('off', p1 > 0.06);
+
+    // ----- act 2 -----
+    const p2 = prog(act2);
+    cards.forEach((card, i) => {
+      const at = FLY_AT[i];
+      const dir = card.dataset.fly;
+      card.classList.toggle('stamped', p2 > at - 0.08 && p2 <= at);
+      card.classList.toggle('fly-left', dir === 'left' && p2 > at);
+      card.classList.toggle('fly-right', dir === 'right' && p2 > at);
+      card.style.zIndex = 20 - i;
+    });
+    const done = p2 > 0.82;
+    a2sticky.classList.toggle('done', done);
+    a2verdict.classList.toggle('on', done);
+  }
+
+  if (REDUCED_MOTION) {
+    // no scroll theatre: everything revealed, verdict shown
+    tiles.forEach((t) => t.classList.add('off'));
+    photo.style.filter = 'none'; photo.style.transform = 'none';
+    a1word.classList.add('on'); a1tag.classList.add('on'); a1cta.classList.add('on');
+    act1.style.height = act2.style.height = 'auto';
+    a2verdict.classList.add('on');
+  } else {
+    let ticking = false;
+    const onMove = () => {
+      if (!ticking) { ticking = true; requestAnimationFrame(() => { update(); ticking = false; }); }
+    };
+    addEventListener('scroll', onMove, { passive: true });
+    addEventListener('resize', onMove);
+    update();
+  }
 })();
 
 // ---------- 24h ring ----------
