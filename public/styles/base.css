@@ -21,13 +21,17 @@
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; overflow-x: clip; }
 body {
   font-family: var(--font-ui);
   background: var(--cream);
   color: var(--ink);
   min-height: 100dvh;
-  overflow-x: clip; /* like hidden, but doesn't create a scroll container (keeps position:sticky working) */
+  /* clip (not hidden) so it doesn't create a scroll container — keeps position:sticky working.
+     Set on BOTH html and body: body alone leaves html's overflow-x at its default `visible`,
+     so off-screen transformed elements (e.g. slide-in reveals) still inflate the page's layout
+     viewport width on mobile, even though nothing is visibly wrong until you check the nav. */
+  overflow-x: clip;
   -webkit-font-smoothing: antialiased;
 }
 em, .serif { font-family: var(--font-serif); font-style: italic; font-weight: 500; }
